@@ -28,11 +28,14 @@ gem "symbol-fstring"
 # Pagination
 gem "pagy"
 
+# I18n - standard Rails translations
+gem "rails-i18n"
+
 # Solid Trifecta - included in Rails 8+ by default
 # No need to add solid_queue, solid_cache, solid_cable
 
-# Mission Control for monitoring jobs
-gem "mission_control-jobs"
+# Mission Control for monitoring jobs (commented out - brings Bulma CSS)
+# gem "mission_control-jobs"
 
 # Image processing (uncomment if needed)
 # gem "image_processing"

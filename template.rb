@@ -19,6 +19,7 @@ after_bundle do
   apply "#{TEMPLATE_ROOT}/template/admin.rb"
   apply "#{TEMPLATE_ROOT}/template/routes.rb"
   apply "#{TEMPLATE_ROOT}/template/home.rb"
+  apply "#{TEMPLATE_ROOT}/template/i18n.rb"
   apply "#{TEMPLATE_ROOT}/template/email.rb"
   apply "#{TEMPLATE_ROOT}/template/css.rb"
   apply "#{TEMPLATE_ROOT}/template/theme_system.rb"

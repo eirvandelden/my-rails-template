@@ -9,6 +9,5 @@ rails_command "solid_cache:install"
 say "Installing Solid Cable...", :blue
 rails_command "solid_cable:install"
 
-# Mount Mission Control - no install command needed, just mount it
-say "Mounting Mission Control Jobs...", :blue
-route 'mount MissionControl::Jobs::Engine, at: "/jobs"'
+# Mission Control removed - brings Bulma CSS which conflicts with classless approach
+# If you need job monitoring, use the Rails console or add a custom admin page

@@ -30,7 +30,7 @@ create_file "app/controllers/admin/users_controller.rb", <<~RUBY
 
     def update
       if @user.update(user_params)
-        redirect_to admin_user_path(@user), notice: "User updated successfully"
+        redirect_to admin_user_path(@user), notice: t(".success")
       else
         render :edit, status: :unprocessable_entity
       end
@@ -38,10 +38,10 @@ create_file "app/controllers/admin/users_controller.rb", <<~RUBY
 
     def destroy
       if @user == Current.user
-        redirect_to admin_users_path, alert: "You cannot delete yourself"
+        redirect_to admin_users_path, alert: t(".cannot_delete_self")
       else
         @user.destroy
-        redirect_to admin_users_path, notice: "User deleted successfully"
+        redirect_to admin_users_path, notice: t(".success")
       end
     end
 
@@ -65,27 +65,27 @@ remove_file "app/views/admin/users/update.html.erb"
 remove_file "app/views/admin/users/destroy.html.erb"
 
 create_file "app/views/admin/users/index.html.erb", <<~ERB
-  <h1>User Management</h1>
+  <h1><%= t(".title") %></h1>
 
   <table>
     <thead>
       <tr>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Created</th>
-        <th>Actions</th>
+        <th><%= t(".email") %></th>
+        <th><%= t(".role") %></th>
+        <th><%= t(".created_at") %></th>
+        <th><%= t(".actions") %></th>
       </tr>
     </thead>
     <tbody>
       <% @users.each do |user| %>
         <tr>
           <td><%= user.email %></td>
-          <td><%= user.role.titleize %></td>
-          <td><%= user.created_at.to_fs(:long) %></td>
+          <td><%= user.role %></td>
+          <td><%= l(user.created_at, format: :long) %></td>
           <td>
-            <%= link_to "View", admin_user_path(user) %>
-            <%= link_to "Edit", edit_admin_user_path(user) %>
-            <%= button_to "Delete", admin_user_path(user), method: :delete, data: { confirm: "Are you sure?" } unless user == Current.user %>
+            <%= link_to t(".view"), admin_user_path(user) %>
+            <%= link_to t(".edit"), edit_admin_user_path(user) %>
+            <%= button_to t(".delete"), admin_user_path(user), method: :delete, data: { turbo_confirm: t(".confirm_delete") } unless user == Current.user %>
           </td>
         </tr>
       <% end %>
@@ -94,35 +94,35 @@ create_file "app/views/admin/users/index.html.erb", <<~ERB
 ERB
 
 create_file "app/views/admin/users/show.html.erb", <<~ERB
-  <h1>User Details</h1>
+  <h1><%= t(".title") %></h1>
 
   <dl>
-    <dt>Email</dt>
+    <dt><%= t(".email") %></dt>
     <dd><%= @user.email %></dd>
 
-    <dt>Role</dt>
-    <dd><%= @user.role.titleize %></dd>
+    <dt><%= t(".role") %></dt>
+    <dd><%= @user.role %></dd>
 
-    <dt>Created</dt>
-    <dd><%= @user.created_at.to_fs(:long) %></dd>
+    <dt><%= t(".created_at") %></dt>
+    <dd><%= l(@user.created_at, format: :long) %></dd>
 
-    <dt>Active Sessions</dt>
+    <dt><%= t(".active_sessions") %></dt>
     <dd><%= @user.sessions.count %></dd>
   </dl>
 
   <nav>
-    <%= link_to "Edit", edit_admin_user_path(@user) %>
-    <%= link_to "Back", admin_users_path %>
+    <%= link_to t(".edit"), edit_admin_user_path(@user) %>
+    <%= link_to t(".back"), admin_users_path %>
   </nav>
 ERB
 
 create_file "app/views/admin/users/edit.html.erb", <<~ERB
-  <h1>Edit User</h1>
+  <h1><%= t(".title") %></h1>
 
   <%= form_with model: @user, url: admin_user_path(@user) do |form| %>
     <% if @user.errors.any? %>
       <aside role="alert">
-        <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+        <h2><%= t("errors.template.header", count: @user.errors.count) %></h2>
         <ul>
           <% @user.errors.each do |error| %>
             <li><%= error.full_message %></li>
@@ -132,16 +132,16 @@ create_file "app/views/admin/users/edit.html.erb", <<~ERB
     <% end %>
 
     <fieldset>
-      <label for="user_email">Email</label>
+      <label for="user_email"><%= t(".email") %></label>
       <%= form.email_field :email, required: true %>
 
-      <label for="user_role">Role</label>
-      <%= form.select :role, User.roles.keys.map { |r| [r.titleize, r] }, {}, required: true %>
+      <label for="user_role"><%= t(".role") %></label>
+      <%= form.select :role, User.roles.keys.map { |r| [r, r] }, {}, required: true %>
     </fieldset>
 
     <nav>
-      <%= form.submit "Update User" %>
-      <%= link_to "Cancel", admin_user_path(@user) %>
+      <%= form.submit t(".submit") %>
+      <%= link_to t(".cancel"), admin_user_path(@user) %>
     </nav>
   <% end %>
 ERB
@@ -149,24 +149,24 @@ ERB
 # Create admin layout - semantic HTML, no classes
 create_file "app/views/layouts/admin.html.erb", <<~ERB
   <!DOCTYPE html>
-  <html>
+  <html lang="<%= I18n.locale %>" <%= tag.attributes(theme_attributes) %>>
     <head>
-      <title>Admin - <%= Rails.application.class.module_parent_name %></title>
+      <title><%= t("admin.title") %> - <%= Rails.application.class.module_parent_name %></title>
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta name="turbo-cache-control" content="no-cache">
       <%= csrf_meta_tags %>
       <%= csp_meta_tag %>
 
-      <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+      <%= stylesheet_link_tag :all, "data-turbo-track": "reload" %>
       <%= javascript_importmap_tags %>
     </head>
 
     <body>
       <header>
         <nav>
-          <%= link_to "Dashboard", root_path %>
-          <%= link_to "Users", admin_users_path %>
-          <%= link_to "Back to Site", root_path %>
+          <%= link_to t("admin.nav.dashboard"), root_path %>
+          <%= link_to t("admin.nav.users"), admin_users_path %>
+          <%= link_to t("admin.nav.back_to_site"), root_path %>
         </nav>
       </header>
 

@@ -4,55 +4,25 @@
 say "Creating agents.md symlink...", :blue
 run "ln -sf ~/Developer/dotfiles/AGENTS.md agents.md"
 
-# Create RuboCop configuration
-create_file ".rubocop.yml", <<~YAML
-  # Omakase Ruby styling for Rails
-  inherit_gem:
-    rubocop-rails-omakase: rubocop.yml
+# Copy RuboCop configuration from template
+rubocop_source = File.join(TEMPLATE_ROOT, ".rubocop.yml")
+if File.exist?(rubocop_source)
+  # Read the actual file content (follows symlink)
+  create_file ".rubocop.yml", File.read(rubocop_source)
+  say "  ✓ Created .rubocop.yml", :green
+else
+  say "  ✗ Warning: .rubocop.yml not found in template", :yellow
+end
 
-  inherit_from:
-    - .rubocop_todo.yml
-    - ~/.rubocop.yml
-
-  AllCops:
-    Exclude:
-      - 'db/migrate/**/*'
-      - 'db/schema.rb'
-      - 'db/queue_schema.rb'
-      - 'node_modules/**/*'
-      - 'vendor/**/*'
-      - 'bin/**/*'
-
-  Metrics/BlockLength:
-    Exclude:
-      - 'config/environments/*'
-      - 'config/routes.rb'
-      - 'lib/tasks/**/*'
-      - 'test/**/*'
-YAML
-
-# Create lefthook configuration
-create_file ".lefthook.yml", <<~YAML
-  # Git hooks managed by lefthook
-  # Install: lefthook install
-
-  pre-commit:
-    commands:
-      rubocop:
-        glob: "*.rb"
-        run: bundle exec rubocop {staged_files}
-
-      trailing-whitespace:
-        run: git diff --check
-
-  pre-push:
-    commands:
-      tests:
-        run: bin/rails test
-
-      security:
-        run: bundle exec brakeman -q -z
-YAML
+# Copy lefthook configuration from template
+lefthook_source = File.join(TEMPLATE_ROOT, "lefthook.yml")
+if File.exist?(lefthook_source)
+  # Read the actual file content (follows symlink)
+  create_file "lefthook.yml", File.read(lefthook_source)
+  say "  ✓ Created lefthook.yml", :green
+else
+  say "  ✗ Warning: lefthook.yml not found in template", :yellow
+end
 
 # Install lefthook
 run "bundle exec lefthook install"
