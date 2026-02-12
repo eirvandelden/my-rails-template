@@ -20,7 +20,7 @@ create_file "app/controllers/preferences_controller.rb", <<~RUBY
     private
 
     def preference_params
-      params.require(:user).permit(:locale, :color_scheme, :light_theme, :dark_theme)
+      params.require(:user).permit(:locale, :timezone, :color_scheme, :light_theme, :dark_theme)
     end
   end
 RUBY
@@ -46,6 +46,9 @@ create_file "app/views/preferences/edit.html.erb", <<~ERB
 
       <label for="user_locale"><%= t(".locale") %></label>
       <%= form.select :locale, User::AVAILABLE_LOCALES.map { |l| [t("locales.\#{l}"), l] } %>
+
+      <label for="user_timezone"><%= t(".timezone") %></label>
+      <%= form.time_zone_select :timezone, nil, {}, { class: "timezone-select" } %>
     </fieldset>
 
     <fieldset>

@@ -6,6 +6,7 @@ generate :model, "User",
   "password_digest:string",
   "role:integer",
   "locale:string",
+  "timezone:string",
   "color_scheme:integer",
   "light_theme:integer",
   "dark_theme:integer"
@@ -33,6 +34,7 @@ create_file "app/models/user.rb", <<~RUBY
     validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
     validates :role, presence: true
     validates :locale, presence: true, inclusion: { in: AVAILABLE_LOCALES }
+    validates :timezone, presence: true, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name) }
     validates :color_scheme, presence: true
     validates :light_theme, presence: true
     validates :dark_theme, presence: true
@@ -46,10 +48,16 @@ create_file "app/models/user.rb", <<~RUBY
     # Set default locale
     after_initialize :set_defaults, if: :new_record?
 
+    # Return timezone as ActiveSupport::TimeZone object
+    def time_zone
+      ActiveSupport::TimeZone[timezone]
+    end
+
     private
 
     def set_defaults
       self.locale ||= "en"
+      self.timezone ||= "UTC"
     end
   end
 RUBY
@@ -74,6 +82,7 @@ inject_into_file Dir["db/migrate/*_create_users.rb"].first,
       t.string :password_digest, null: false
       t.integer :role, default: 0, null: false
       t.string :locale, default: "en", null: false
+      t.string :timezone, default: "UTC", null: false
       t.integer :color_scheme, default: 0, null: false
       t.integer :light_theme, default: 1, null: false
       t.integer :dark_theme, default: 1, null: false
@@ -85,6 +94,7 @@ gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.string :email$/,
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.string :password_digest$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.integer :role$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.string :locale$/, ""
+gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.string :timezone$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.integer :color_scheme$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.integer :light_theme$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.integer :dark_theme$/, ""

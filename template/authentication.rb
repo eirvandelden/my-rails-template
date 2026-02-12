@@ -64,6 +64,7 @@ create_file "app/controllers/concerns/authentication.rb", <<~RUBY
 
     def set_locale
       I18n.locale = Current.user&.locale || I18n.default_locale
+      Time.zone = Current.user&.time_zone || Time.zone
     end
   end
 RUBY

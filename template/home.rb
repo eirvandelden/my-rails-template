@@ -29,6 +29,8 @@ create_file "app/views/layouts/application.html.erb", <<~ERB
     <head>
       <title><%= content_for(:title) || Rails.application.class.module_parent_name %></title>
       <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta name="view-transition" content="same-origin">
+      <meta name="color-scheme" content="light dark">
       <%= csrf_meta_tags %>
       <%= csp_meta_tag %>
       <%= yield :head %>
