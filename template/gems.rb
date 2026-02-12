@@ -13,6 +13,9 @@ gem_group :development, :test do
   gem "bundler-audit", require: false
   gem "i18n-tasks"
   gem "faker"
+  gem "dotenv-rails"
+  gem "capybara"
+  gem "selenium-webdriver"
 end
 
 gem_group :development do
@@ -25,8 +28,11 @@ end
 # Note: thruster is included in Rails 8+ by default
 gem "symbol-fstring"
 
+# Data migrations
+gem "data_migrate"
+
 # Pagination
-gem "pagy"
+gem "geared_pagination"
 
 # I18n - standard Rails translations
 gem "rails-i18n"

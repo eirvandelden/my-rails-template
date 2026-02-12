@@ -73,6 +73,15 @@ append_to_file ".gitignore", <<~GITIGNORE
   tmp/letter_opener/
 GITIGNORE
 
+# Create .env file with starter values
+create_file ".env", <<~ENV
+  # Development environment variables
+  # Copy from .env.template and fill in your values
+
+  RAILS_MAX_THREADS=5
+  WEB_CONCURRENCY=2
+ENV
+
 # Create Procfile for local development
 create_file "Procfile.dev", <<~PROCFILE
   web: bundle exec thrust bin/rails server
