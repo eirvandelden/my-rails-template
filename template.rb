@@ -8,7 +8,6 @@ TEMPLATE_ROOT = File.expand_path(File.dirname(__FILE__))
 # Apply modular template components
 apply "#{TEMPLATE_ROOT}/template/gems.rb"
 
-# rubocop:disable Metrics/BlockLength
 after_bundle do
   apply "#{TEMPLATE_ROOT}/template/solid.rb"
   apply "#{TEMPLATE_ROOT}/template/data_migrate.rb"
@@ -38,4 +37,3 @@ after_bundle do
   apply "#{TEMPLATE_ROOT}/template/readme_updates.rb"
   apply "#{TEMPLATE_ROOT}/template/finish.rb"
 end
-# rubocop:enable Metrics/BlockLength

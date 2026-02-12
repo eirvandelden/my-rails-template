@@ -14,13 +14,10 @@ create_file "config/initializers/content_security_policy.rb", <<~RUBY
       policy.style_src :self, :https, :unsafe_inline
       # If you need to enable unsafe_inline for scripts, do so thoughtfully
       # policy.script_src :self, :https, :unsafe_inline
-
-      # Specify fallback in case something is missing
-      policy.default_src :self, :https
     end
 
-    # Generate session nonces for 'unsafe-inline' scripts
-    config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
+    # Generate secure random nonces for inline scripts
+    config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
 
     # Report CSP violations (useful for debugging)
     # Uncomment to enable CSP violation reports

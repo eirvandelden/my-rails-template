@@ -62,7 +62,7 @@ create_file "lib/rails_ext/README.md", <<~MD
   This is NOT for application-level concerns. Use instead:
   - `app/models/` for models and model concerns
   - `app/controllers/` for controllers and controller concerns
-  - `lib/` for utility classes and service objects
+  - `lib/` for utility classes and helper modules
 MD
 
 say "✓ Rails extensions directory created", :green

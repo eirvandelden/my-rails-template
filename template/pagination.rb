@@ -12,9 +12,9 @@ end
 # Update admin users controller to use geared_pagination
 gsub_file "app/controllers/admin/users_controller.rb",
   /@users = User\.all/,
-  "@users = User.order(created_at: :desc).page(params[:page]).per(50)"
+  "@users = User.order(created_at: :desc).page(params[:page])"
 
 say "✓ geared_pagination configured", :green
-say "  Default: 50 items per page", :white
-say "  Usage: Model.order(...).page(params[:page]).per(25)", :white
+say "  Usage: @records = Model.order(...).page(params[:page])", :white
 say "  In views: <%= paginate @records %>", :white
+say "  Configure per_page at model level: self.per_page = 50", :white

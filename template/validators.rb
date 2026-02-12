@@ -5,15 +5,25 @@ empty_directory "app/validators"
 
 # Create email validator
 create_file "app/validators/email_validator.rb", <<~RUBY
-  class EmailValidator < ActiveModel::Validator
+  # Validates that an attribute contains a valid email address.
+  #
+  # @example
+  #   validates :email, email: true
+  #   validates :contact_email, email: true, allow_blank: true
+  class EmailValidator < ActiveModel::EachValidator
     EMAIL_REGEX = URI::MailTo::EMAIL_REGEXP
 
-    def validate(record)
-      email = record.send(attribute_name)
-      return if email.blank?
+    # Validates a single attribute value.
+    #
+    # @param record [ActiveRecord::Base] the model being validated
+    # @param attribute [Symbol] the attribute name being validated
+    # @param value [String] the value to validate
+    # @return [void]
+    def validate_each(record, attribute, value)
+      return if value.blank?
 
-      unless email.match?(EMAIL_REGEX)
-        record.errors.add(attribute_name, :invalid_email, value: email)
+      unless value.match?(EMAIL_REGEX)
+        record.errors.add(attribute, :invalid, value: value)
       end
     end
   end
@@ -21,19 +31,28 @@ RUBY
 
 # Create URL validator
 create_file "app/validators/url_validator.rb", <<~RUBY
-  class UrlValidator < ActiveModel::Validator
-    def validate(record)
-      url = record.send(attribute_name)
-      return if url.blank?
+  # Validates that an attribute contains a valid HTTP(S) URL.
+  #
+  # @example
+  #   validates :website, url: true
+  #   validates :homepage, url: true, allow_blank: true
+  class UrlValidator < ActiveModel::EachValidator
+    # Validates a single attribute value.
+    #
+    # @param record [ActiveRecord::Base] the model being validated
+    # @param attribute [Symbol] the attribute name being validated
+    # @param value [String] the value to validate
+    # @return [void]
+    def validate_each(record, attribute, value)
+      return if value.blank?
 
       begin
-        URI.parse(url)
-        uri = URI(url)
+        uri = URI.parse(value)
         unless uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
-          record.errors.add(attribute_name, :invalid_url, value: url)
+          record.errors.add(attribute, :invalid, value: value)
         end
       rescue URI::InvalidURIError
-        record.errors.add(attribute_name, :invalid_url, value: url)
+        record.errors.add(attribute, :invalid, value: value)
       end
     end
   end
@@ -87,12 +106,12 @@ create_file "app/validators/README.md", <<~MD
   Create a new file `app/validators/my_validator.rb`:
 
   ```ruby
-  class MyValidator < ActiveModel::Validator
-    def validate(record)
-      value = record.send(attribute_name)
+  class MyValidator < ActiveModel::EachValidator
+    def validate_each(record, attribute, value)
+      return if value.blank?
 
-      if value.present? && !meets_criteria?(value)
-        record.errors.add(attribute_name, :invalid, value: value)
+      unless meets_criteria?(value)
+        record.errors.add(attribute, :invalid, value: value)
       end
     end
 
@@ -100,6 +119,7 @@ create_file "app/validators/README.md", <<~MD
 
     def meets_criteria?(value)
       # Your validation logic here
+      true
     end
   end
   ```
