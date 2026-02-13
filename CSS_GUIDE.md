@@ -1,8 +1,18 @@
 # CSS System Guide
 
-This template uses **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** - a classless CSS framework with OKLCH Selenized colors and theme switching.
+This template uses **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** - a classless CSS framework with OKLCH Selenized colors, SMACSS architecture, and theme switching.
 
 See the [MVPA.css repository](https://github.com/eirvandelden/MVPA.css) for framework documentation.
+
+## SMACSS Structure
+
+MVPA.css is organized using SMACSS (Scalable and Modular Architecture for CSS):
+
+- `0_settings/` - Colors, variables (OKLCH Selenized colors, spacing)
+- `1_base/` - Reset, typography, tables, forms, details
+- `2_layout/` - Header, main, footer
+- `3_components/` - Flash, errors, buttons, progress, etc.
+- `4_themes/` - Theme switching logic
 
 ## Usage
 

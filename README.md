@@ -12,7 +12,7 @@ A comprehensive Rails 8.1+ application template with authentication, authorizati
 
 ### CSS Framework
 
-- **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** - Classless CSS framework with theme switching
+- **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** - Classless CSS framework with SMACSS architecture and theme switching
 
 ### Infrastructure
 
