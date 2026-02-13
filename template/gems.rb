@@ -6,6 +6,9 @@ gsub_file "Gemfile", /source "https:\/\/rubygems.org"/, 'source "https://gem.coo
 # bcrypt for has_secure_password
 gem "bcrypt"
 
+# MVPA.css - Classless CSS framework
+gem "mvpa-css", github: "eirvandelden/mvpa.css"
+
 # Development and test gems
 gem_group :development, :test do
   # rubocop-rails-omakase and brakeman are included in Rails 8+ by default

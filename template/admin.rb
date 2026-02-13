@@ -157,7 +157,7 @@ create_file "app/views/layouts/admin.html.erb", <<~ERB
       <%= csrf_meta_tags %>
       <%= csp_meta_tag %>
 
-      <%= stylesheet_link_tag :all, "data-turbo-track": "reload" %>
+      <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
       <%= javascript_importmap_tags %>
     </head>
 

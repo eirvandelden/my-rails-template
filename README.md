@@ -4,16 +4,27 @@ A comprehensive Rails 8.1+ application template with authentication, authorizati
 
 ## Features
 
+### Authentication & Authorization
+
 - **Session-based Authentication** - Secure authentication without Devise
 - **Role-based Authorization** - User and Admin roles with access control
 - **Admin Panel** - User management interface for administrators
+
+### CSS Framework
+
+- **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** - Classless CSS framework with SMACSS architecture and theme switching
+
+### Infrastructure
+
 - **Email System** - Transactional emails with Letter Opener (development)
 - **Background Jobs** - Solid Queue for async processing
-- **Modern CSS** - MVP.css + SMACSS architecture with 37signals patterns
+- **Mission Control** - Job monitoring dashboard
+
+### Code Quality
+
 - **Code Quality** - RuboCop (Omakase), Brakeman, Bundler Audit
 - **Git Hooks** - Lefthook for automated checks
 - **Deployment Ready** - Kamal configuration for self-hosted deployment
-- **Mission Control** - Job monitoring dashboard
 
 ## Quick Start
 
@@ -59,7 +70,7 @@ template/
   ├── routes.rb         # Route configuration
   ├── home.rb           # Home page
   ├── email.rb          # Email system setup
-  ├── css.rb            # CSS structure (MVP.css + SMACSS)
+  ├── css.rb            # CSS structure (MVPA.css framework)
   ├── config.rb         # Configuration files (.env, RuboCop, etc.)
   ├── deployment.rb     # Kamal deployment setup
   ├── seeds.rb          # Database seeds
@@ -140,7 +151,7 @@ The template creates two default users:
 **Frontend:**
 
 - Hotwire (Turbo + Stimulus)
-- MVP.css + SMACSS structure
+- MVPA.css (classless CSS framework)
 - Importmap (no Node.js bundler)
 - Propshaft (asset pipeline)
 
