@@ -12,11 +12,7 @@ A comprehensive Rails 8.1+ application template with authentication, authorizati
 
 ### CSS Framework
 
-- **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** - Classless CSS framework with OKLCH Selenized colors
-- 4 built-in themes (White, Selenized Light, Black, Selenized Dark)
-- User-configurable theme preferences with live switching
-- 37signals spacing system for consistent layouts
-- Mobile-first responsive design
+- **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** - Classless CSS framework with theme switching
 
 ### Infrastructure
 
