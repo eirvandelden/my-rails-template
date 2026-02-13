@@ -1,6 +1,45 @@
 # CSS System Guide
 
-The template includes a complete classless CSS system with Selenized OKLCH colors and theme switching.
+The Paris template uses **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** as its CSS framework.
+
+## About MVPA.css
+
+MVPA.css is a classless CSS framework featuring:
+- Semantic HTML styling (minimal classes needed)
+- OKLCH Selenized color system (4 themes)
+- 37signals spacing methodology (1ch × 1rem base units)
+- Rails-specific components (flash messages, errors, forms)
+- Theme switching with user preferences
+- Mobile-first responsive design
+
+## Framework Integration
+
+### Gem Installation
+
+MVPA.css is installed as a gem from GitHub:
+
+```ruby
+# Gemfile
+gem "mvpa-css", github: "eirvandelden/mvpa.css"
+```
+
+The gem provides its CSS assets via the Rails asset pipeline (Propshaft). No manual file copying needed!
+
+### In Generated Apps
+
+Generated apps include MVPA.css via `app/assets/stylesheets/application.css`:
+
+```css
+/* app/assets/stylesheets/application.css */
+@import "mvpa/mvpa";
+```
+
+This single import loads all MVPA.css components in the correct order:
+- `0_settings/` - OKLCH Selenized colors, CSS variables
+- `1_base/` - Reset, typography, tables, forms, details
+- `2_layout/` - Header, main, footer
+- `3_components/` - Flash, errors, buttons, progress, etc.
+- `4_themes/` - Theme switching logic
 
 ## Features
 
@@ -9,22 +48,58 @@ The template includes a complete classless CSS system with Selenized OKLCH color
 - **4 themes** - White, Selenized Light (default), Black, Selenized Dark (default)
 - **User preferences** - Theme switching based on user model
 - **37signals spacing** - 1ch × 1rem base unit system
-- **@layer organization** - Proper cascade control
 - **Responsive** - Mobile-first design
 - **Dark mode** - Respects system preference + user choice
 
-## File Structure
+## Updating MVPA.css
 
+### For App Developers
+
+Update to the latest MVPA.css version:
+
+```bash
+bundle update mvpa-css
 ```
-css/
-├── application.css   # Main file with imports
-├── colors.css        # OKLCH Selenized theme colors
-├── variables.css     # 37signals spacing system
-├── base.css          # Semantic HTML element styles
-├── forms.css         # Classless form styling
-├── layout.css        # Structural components
-├── components.css    # UI patterns (minimal classes)
-└── themes.css        # Theme switching logic
+
+This pulls the latest changes from the MVPA.css GitHub repository.
+
+## Local Customizations
+
+Add app-specific CSS in `app/assets/stylesheets/application.css` after the MVPA.css import:
+
+```css
+/* app/assets/stylesheets/application.css */
+@import "mvpa/mvpa";
+
+/* Your local customizations */
+:root {
+  --inline-space: 1.5ch;  /* Override MVPA.css spacing */
+  --my-custom-color: oklch(60% 0.15 270);
+}
+
+.my-custom-component {
+  padding: var(--block-space);
+  background: var(--my-custom-color);
+}
+```
+
+**Best practice:** Use CSS custom properties to override MVPA.css defaults rather than redefining styles.
+
+### Separate Local CSS Files
+
+For larger customizations, create separate CSS files:
+
+```css
+/* app/assets/stylesheets/application.css */
+@import "mvpa/mvpa";
+@import "local/custom";
+```
+
+```css
+/* app/assets/stylesheets/local/custom.css */
+:root {
+  /* Your overrides */
+}
 ```
 
 ## Theme System
@@ -72,17 +147,17 @@ Forms are completely classless:
 <form>
   <fieldset>
     <legend>Account Settings</legend>
-    
+
     <label for="email">Email</label>
     <input type="email" id="email" name="user[email]">
-    
+
     <label for="locale">Language</label>
     <select id="locale" name="user[locale]">
       <option value="en">English</option>
       <option value="nl">Nederlands</option>
       <option value="it">Italiano</option>
     </select>
-    
+
     <button type="submit">Save</button>
   </fieldset>
 </form>
@@ -222,40 +297,6 @@ input {
 }
 ```
 
-## Customization
-
-### Changing Default Theme
-
-Edit `css/colors.css`:
-
-```css
-/* Change default light theme */
-html[light-theme="selenized_light"],
-html:not([light-theme]) {
-  /* Your custom colors */
-}
-```
-
-### Adding New Colors
-
-Add to `css/colors.css`:
-
-```css
---lch-purple: 55% 0.16 310;
---color-purple: oklch(var(--lch-purple));
-```
-
-### Adjusting Spacing
-
-Edit `css/variables.css`:
-
-```css
-:root {
-  --inline-space: 1.5ch;  /* Increase horizontal spacing */
-  --block-space: 1.25rem; /* Increase vertical spacing */
-}
-```
-
 ## Usage in Views
 
 ### Layout with Theme Support
@@ -264,12 +305,10 @@ Edit `css/variables.css`:
 <!DOCTYPE html>
 <html<%= tag.attributes(theme_attributes) if defined?(theme_attributes) %>>
   <head>
-    <%= stylesheet_link_tag "application" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
   <body>
-    <div class="container">
-      <%= yield %>
-    </div>
+    <%= yield %>
   </body>
 </html>
 ```
@@ -280,20 +319,20 @@ Edit `css/variables.css`:
 <%= form_with model: @user do |form| %>
   <fieldset>
     <legend>Appearance</legend>
-    
+
     <label for="user_color_scheme">Color Scheme</label>
-    <%= form.select :color_scheme, 
+    <%= form.select :color_scheme,
       User.color_schemes.keys.map { |k| [k.titleize, k] } %>
-    
+
     <label for="user_light_theme">Light Theme</label>
     <%= form.select :light_theme,
       User.light_themes.keys.map { |k| [k.titleize, k] } %>
-    
+
     <label for="user_dark_theme">Dark Theme</label>
     <%= form.select :dark_theme,
       User.dark_themes.keys.map { |k| [k.titleize, k] } %>
   </fieldset>
-  
+
   <button type="submit">Save Preferences</button>
 <% end %>
 ```
@@ -302,15 +341,15 @@ Edit `css/variables.css`:
 
 - Modern browsers with OKLCH support (Chrome 111+, Safari 15.4+, Firefox 113+)
 - Fallback colors automatically used in older browsers
-- All responsive features work in IE11+ (without OKLCH)
+- All responsive features work in modern browsers
 
 ## Performance
 
 - No CSS-in-JS overhead
 - Small file size (~10KB total)
 - Minimal specificity conflicts
-- Fast cascade with @layer
 - No unused utility classes
+- Served via Rails asset pipeline
 
 ## Accessibility
 
@@ -320,3 +359,11 @@ Edit `css/variables.css`:
 - Sufficient color contrast
 - Logical properties for RTL support
 - Semantic HTML structure
+
+## Contributing to MVPA.css
+
+If you improve MVPA.css while working on apps:
+1. Clone MVPA.css repo separately: `git clone https://github.com/eirvandelden/mvpa.css`
+2. Make improvements and push to MVPA.css repo
+3. Update apps to use latest: `bundle update mvpa-css`
+4. All future apps benefit from improvements

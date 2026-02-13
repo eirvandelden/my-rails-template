@@ -1,4 +1,5 @@
-# Theme switching system - JavaScript and helpers
+# Theme switching system for MVPA.css
+# MVPA.css provides the CSS, this adds Rails user preference integration
 
 say "Setting up theme switching system...", :blue
 
@@ -9,7 +10,7 @@ create_file "app/helpers/theme_helper.rb", <<~RUBY
       return {} unless Current.user
 
       # Only set data-theme when user has explicitly chosen non-system
-      # CSS handles system preference via prefers-color-scheme
+      # MVPA.css handles system preference via prefers-color-scheme
       case Current.user.color_scheme
       when "light"
         { "data-theme": Current.user.light_theme }
@@ -27,7 +28,7 @@ RUBY
 create_file "app/javascript/controllers/theme_controller.js", <<~JS
   import { Controller } from "@hotwired/stimulus"
 
-  // This controller is optional - CSS handles prefers-color-scheme automatically
+  // This controller is optional - MVPA.css handles prefers-color-scheme automatically
   // It's only needed if you want to support theme toggling without page reload
   export default class extends Controller {
     static values = {
@@ -49,7 +50,7 @@ create_file "app/javascript/controllers/theme_controller.js", <<~JS
       } else if (this.colorSchemeValue === "dark") {
         this.element.dataset.theme = this.darkThemeValue
       } else {
-        // System - remove override, let CSS handle it
+        // System - remove override, let MVPA.css handle it
         delete this.element.dataset.theme
       }
     }
