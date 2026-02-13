@@ -1,6 +1,6 @@
 # CSS System Guide
 
-The Paris template uses **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** as its CSS framework.
+This template uses **[MVPA.css](https://github.com/eirvandelden/MVPA.css)** as its CSS framework.
 
 ## About MVPA.css
 
