@@ -21,7 +21,7 @@ create_file "app/assets/stylesheets/application.css", <<~CSS
    * This imports all MVPA.css components in the correct order:
    * 0_settings → 1_base → 2_layout → 3_components → 4_themes
    */
-  @import "mvpa/mvpa";
+  @import url("mvpa/mvpa.css");
 
   /*
    * Add your local CSS customizations below
