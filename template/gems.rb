@@ -31,6 +31,9 @@ end
 # Note: thruster is included in Rails 8+ by default
 gem "symbol-fstring"
 
+# Exception tracking - self-hosted Rails engine
+gem "faultline", github: "dlt/faultline"
+
 # Data migrations
 gem "data_migrate"
 
