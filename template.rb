@@ -24,6 +24,7 @@ after_bundle do
   apply "#{TEMPLATE_ROOT}/template/validators.rb"
   apply "#{TEMPLATE_ROOT}/template/pagination.rb"
   apply "#{TEMPLATE_ROOT}/template/security.rb"
+  apply "#{TEMPLATE_ROOT}/template/faultline.rb"
   apply "#{TEMPLATE_ROOT}/template/admin.rb"
   apply "#{TEMPLATE_ROOT}/template/routes.rb"
   apply "#{TEMPLATE_ROOT}/template/home.rb"
