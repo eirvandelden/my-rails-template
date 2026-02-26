@@ -14,6 +14,11 @@ gem_group :development, :test do
   # rubocop-rails-omakase and brakeman are included in Rails 8+ by default
   # Only add if somehow missing
   gem "bundler-audit", require: false
+  gem "rubocop-capybara", require: false
+  gem "rubocop-minitest", require: false
+  gem "rubocop-obsession", require: false
+  gem "rubocop-packaging", require: false
+  gem "rubocop-rspec", require: false
   gem "i18n-tasks"
   gem "faker"
   gem "dotenv-rails"

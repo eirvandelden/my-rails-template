@@ -4,7 +4,9 @@ route 'root "home#index"'
 
 route <<~RUBY
   namespace :admin do
-    resources :users, except: [:new, :create]
+    root "dashboard#index"
+    resources :users
+    resources :dashboard, only: [:index]
   end
 RUBY
 

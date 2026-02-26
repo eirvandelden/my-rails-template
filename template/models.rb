@@ -2,9 +2,11 @@
 
 # Generate User model with role enum and preferences
 generate :model, "User",
+  "name:string",
   "email:string:uniq",
   "password_digest:string",
   "role:integer",
+  "last_login_at:datetime",
   "locale:string",
   "timezone:string",
   "color_scheme:integer",
@@ -31,6 +33,7 @@ create_file "app/models/user.rb", <<~RUBY
     enum :dark_theme, { black: 0, selenized_dark: 1 }, default: :selenized_dark
 
     # Validations
+    validates :name, presence: false
     validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
     validates :role, presence: true
     validates :locale, presence: true, inclusion: { in: AVAILABLE_LOCALES }
@@ -40,6 +43,7 @@ create_file "app/models/user.rb", <<~RUBY
     validates :dark_theme, presence: true
 
     # Normalizations
+    normalizes :name, with: -> name { name&.strip }
     normalizes :email, with: -> email { email.strip.downcase }
 
     # Callbacks

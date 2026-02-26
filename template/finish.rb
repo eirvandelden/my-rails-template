@@ -36,7 +36,7 @@ say "5. Email previews (letter_opener):", :cyan
 say "   Check tmp/letter_opener/ or browser will auto-open", :white
 say ""
 say "6. Admin panel:", :cyan
-say "   http://localhost:3000/admin/users (admin only)", :white
+say "   http://localhost:3000/admin (admin only)", :white
 say ""
 say "=== Features Included ===", :green
 say "✓ Session-based authentication", :white

@@ -74,32 +74,67 @@ create_file "config/locales/en.yml", <<~YAML
       nav:
         dashboard: "Dashboard"
         users: "Users"
+        faultline: "Faultline"
         back_to_site: "Back to Site"
+      dashboard:
+        index:
+          title: "Dashboard"
+          summary: "Summary"
+          total_users: "Total Users"
+          admin_users: "Admin Users"
+          recent_logins: "Recent Logins"
+          name: "Name"
+          email: "Email"
+          role: "Role"
+          last_login_at: "Last Login"
+          actions: "Actions"
+          no_name: "-"
+          never: "Never"
+          view: "View"
+          edit: "Edit"
       users:
         index:
           title: "User Management"
+          new_user: "New User"
+          name: "Name"
           email: "Email"
           role: "Role"
+          last_login_at: "Last Login"
           created_at: "Created"
           actions: "Actions"
+          no_name: "-"
+          never: "Never"
           view: "View"
           edit: "Edit"
           delete: "Delete"
           confirm_delete: "Are you sure you want to delete this user?"
         show:
           title: "User Details"
+          name: "Name"
+          no_name: "-"
           email: "Email"
           role: "Role"
+          last_login_at: "Last Login"
+          never: "Never"
           created_at: "Created"
           active_sessions: "Active Sessions"
           edit: "Edit"
           back: "Back"
-        edit:
-          title: "Edit User"
+        new:
+          title: "New User"
+          submit: "Create User"
+        form:
+          name: "Name"
           email: "Email"
           role: "Role"
-          submit: "Update User"
+          password: "Password"
+          password_confirmation: "Confirm Password"
           cancel: "Cancel"
+        create:
+          success: "User created successfully"
+        edit:
+          title: "Edit User"
+          submit: "Update User"
         update:
           success: "User updated successfully"
         destroy:
@@ -174,32 +209,67 @@ create_file "config/locales/nl.yml", <<~YAML
       nav:
         dashboard: "Dashboard"
         users: "Gebruikers"
+        faultline: "Faultline"
         back_to_site: "Terug naar site"
+      dashboard:
+        index:
+          title: "Dashboard"
+          summary: "Overzicht"
+          total_users: "Totaal gebruikers"
+          admin_users: "Admin-gebruikers"
+          recent_logins: "Recente logins"
+          name: "Naam"
+          email: "E-mail"
+          role: "Rol"
+          last_login_at: "Laatste login"
+          actions: "Acties"
+          no_name: "-"
+          never: "Nooit"
+          view: "Bekijken"
+          edit: "Bewerken"
       users:
         index:
           title: "Gebruikersbeheer"
+          new_user: "Nieuwe gebruiker"
+          name: "Naam"
           email: "E-mail"
           role: "Rol"
+          last_login_at: "Laatste login"
           created_at: "Aangemaakt"
           actions: "Acties"
+          no_name: "-"
+          never: "Nooit"
           view: "Bekijken"
           edit: "Bewerken"
           delete: "Verwijderen"
           confirm_delete: "Weet je zeker dat je deze gebruiker wilt verwijderen?"
         show:
           title: "Gebruikersdetails"
+          name: "Naam"
+          no_name: "-"
           email: "E-mail"
           role: "Rol"
+          last_login_at: "Laatste login"
+          never: "Nooit"
           created_at: "Aangemaakt"
           active_sessions: "Actieve sessies"
           edit: "Bewerken"
           back: "Terug"
-        edit:
-          title: "Gebruiker bewerken"
+        new:
+          title: "Nieuwe gebruiker"
+          submit: "Gebruiker aanmaken"
+        form:
+          name: "Naam"
           email: "E-mail"
           role: "Rol"
-          submit: "Gebruiker bijwerken"
+          password: "Wachtwoord"
+          password_confirmation: "Bevestig wachtwoord"
           cancel: "Annuleren"
+        create:
+          success: "Gebruiker succesvol aangemaakt"
+        edit:
+          title: "Gebruiker bewerken"
+          submit: "Gebruiker bijwerken"
         update:
           success: "Gebruiker succesvol bijgewerkt"
         destroy:
@@ -274,32 +344,67 @@ create_file "config/locales/it.yml", <<~YAML
       nav:
         dashboard: "Dashboard"
         users: "Utenti"
+        faultline: "Faultline"
         back_to_site: "Torna al sito"
+      dashboard:
+        index:
+          title: "Dashboard"
+          summary: "Riepilogo"
+          total_users: "Utenti totali"
+          admin_users: "Utenti admin"
+          recent_logins: "Accessi recenti"
+          name: "Nome"
+          email: "Email"
+          role: "Ruolo"
+          last_login_at: "Ultimo accesso"
+          actions: "Azioni"
+          no_name: "-"
+          never: "Mai"
+          view: "Visualizza"
+          edit: "Modifica"
       users:
         index:
           title: "Gestione utenti"
+          new_user: "Nuovo utente"
+          name: "Nome"
           email: "Email"
           role: "Ruolo"
+          last_login_at: "Ultimo accesso"
           created_at: "Creato"
           actions: "Azioni"
+          no_name: "-"
+          never: "Mai"
           view: "Visualizza"
           edit: "Modifica"
           delete: "Elimina"
           confirm_delete: "Sei sicuro di voler eliminare questo utente?"
         show:
           title: "Dettagli utente"
+          name: "Nome"
+          no_name: "-"
           email: "Email"
           role: "Ruolo"
+          last_login_at: "Ultimo accesso"
+          never: "Mai"
           created_at: "Creato"
           active_sessions: "Sessioni attive"
           edit: "Modifica"
           back: "Indietro"
-        edit:
-          title: "Modifica utente"
+        new:
+          title: "Nuovo utente"
+          submit: "Crea utente"
+        form:
+          name: "Nome"
           email: "Email"
           role: "Ruolo"
-          submit: "Aggiorna utente"
+          password: "Password"
+          password_confirmation: "Conferma password"
           cancel: "Annulla"
+        create:
+          success: "Utente creato con successo"
+        edit:
+          title: "Modifica utente"
+          submit: "Aggiorna utente"
         update:
           success: "Utente aggiornato"
         destroy:

@@ -1,7 +1,7 @@
 say "Updating README with new features...", :blue
 
 # Read existing README
-readme_path = Rails.root.join("README.md")
+readme_path = Pathname.new(destination_root).join("README.md")
 if File.exist?(readme_path)
   readme = File.read(readme_path)
 

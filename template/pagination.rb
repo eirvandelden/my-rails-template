@@ -9,12 +9,7 @@ inject_into_file "app/controllers/application_controller.rb",
   RUBY
 end
 
-# Update admin users controller to use geared_pagination
-gsub_file "app/controllers/admin/users_controller.rb",
-  /@users = User\.all/,
-  "@users = User.order(created_at: :desc).page(params[:page])"
-
 say "✓ geared_pagination configured", :green
-say "  Usage: @records = Model.order(...).page(params[:page])", :white
-say "  In views: <%= paginate @records %>", :white
+say "  Usage: set_page_and_extract_portion_from Model.order(...)", :white
+say "  In views: iterate over @page.records", :white
 say "  Configure per_page at model level: self.per_page = 50", :white
