@@ -68,7 +68,7 @@ create_file "lib/tasks/README.md", <<~MD
   ### Task with Arguments
   ```ruby
   task :send_email, [:email] => :environment do |t, args|
-    puts "Sending email to #{args.email}"
+    puts "Sending email to \#{args.email}"
   end
   ```
 

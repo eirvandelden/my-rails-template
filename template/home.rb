@@ -12,7 +12,7 @@ create_file "app/views/home/index.html.erb", <<~ERB
     <p><%= t(".signed_in_as", email: Current.user.email, role: Current.user.role) %></p>
 
     <% if Current.user.admin? %>
-      <p><%= link_to t(".admin_panel"), admin_users_path %></p>
+      <p><%= link_to t(".admin_panel"), admin_root_path %></p>
     <% end %>
 
     <%= button_to t("sessions.sign_out"), session_path, method: :delete %>
@@ -46,7 +46,7 @@ create_file "app/views/layouts/application.html.erb", <<~ERB
           <% if authenticated? %>
             <%= link_to_unless_current t("nav.preferences"), edit_preferences_path %>
             <% if Current.user.admin? %>
-              <%= link_to_unless_current t("nav.admin"), admin_users_path %>
+              <%= link_to_unless_current t("nav.admin"), admin_root_path %>
             <% end %>
             <%= button_to t("sessions.sign_out"), session_path, method: :delete %>
           <% else %>

@@ -50,6 +50,7 @@ create_file "app/controllers/concerns/authentication.rb", <<~RUBY
         user_agent: request.user_agent,
         ip_address: request.remote_ip
       )
+      user.update_column(:last_login_at, Time.current)
 
       Current.session = session
       cookies.signed.permanent[:session_token] = { value: session.token, httponly: true, same_site: :lax }

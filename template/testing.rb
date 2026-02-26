@@ -79,12 +79,12 @@ create_file "test/helpers/session_test_helper.rb", <<~RUBY
 RUBY
 
 # ===== Update test_helper.rb =====
-inject_into_file "test/test_helper.rb", after: "ENV[\"RAILS_ENV\"] ||= \"test\"\n" do
+inject_into_file "test/test_helper.rb", after: "require \"rails/test_help\"\n" do
   "require \"capybara/rails\"\n"
 end
 
-inject_into_file "test/test_helper.rb", after: "class ActiveSupport::TestCase\n" do
-  "  # Add test helper methods from test/helpers/\n  Dir[Rails.root.join(\"test/helpers/*.rb\")].each { |f| require f }\n\n  # Include helper modules\n  include SessionTestHelper\n\n"
+inject_into_file "test/test_helper.rb", after: "class TestCase\n" do
+  "    # Add test helper methods from test/helpers/\n    Dir[Rails.root.join(\"test/helpers/*.rb\")].each { |f| require f }\n\n    # Include helper modules\n    include SessionTestHelper\n\n"
 end
 
 # Enable parallel testing if not already set
@@ -160,17 +160,185 @@ create_file "test/integration/sessions_test.rb", <<~RUBY
   end
 RUBY
 
+create_file "test/integration/admin/dashboard_test.rb", <<~RUBY
+  require "test_helper"
+
+  class Admin::DashboardTest < ActionDispatch::IntegrationTest
+    setup do
+      @admin = users(:admin)
+      @user = users(:user)
+    end
+
+    test "non-admin user is redirected away" do
+      sign_in_as(@user)
+      get admin_root_path
+
+      assert_redirected_to root_path
+    end
+
+    test "admin can access dashboard and sees user table" do
+      sign_in_as(@admin)
+      get admin_root_path
+
+      assert_response :success
+      assert_select "table"
+      assert_select "td", text: @admin.email
+    end
+
+    test "dashboard shows user counts" do
+      sign_in_as(@admin)
+      get admin_root_path
+
+      assert_response :success
+      assert_select "dd", text: User.count.to_s
+      assert_select "dd", text: User.admin.count.to_s
+    end
+  end
+RUBY
+
+create_file "test/integration/admin/users_test.rb", <<~RUBY
+  require "test_helper"
+
+  class Admin::UsersTest < ActionDispatch::IntegrationTest
+    setup do
+      @admin = users(:admin)
+      @user = users(:user)
+    end
+
+    test "admin can list users" do
+      sign_in_as(@admin)
+      get admin_users_path
+
+      assert_response :success
+      assert_select "td", text: @user.email
+    end
+
+    test "admin can view a user" do
+      sign_in_as(@admin)
+      get admin_user_path(@user)
+
+      assert_response :success
+      assert_select "dd", text: @user.email
+    end
+
+    test "admin can reach new user form" do
+      sign_in_as(@admin)
+      get new_admin_user_path
+
+      assert_response :success
+      assert_select "form"
+    end
+
+    test "admin can create a user" do
+      sign_in_as(@admin)
+
+      assert_difference("User.count", 1) do
+        post admin_users_path, params: {
+          user: {
+            name: "Created User",
+            email: "created@example.com",
+            role: "user",
+            password: "password",
+            password_confirmation: "password"
+          }
+        }
+      end
+
+      created_user = User.find_by!(email: "created@example.com")
+      assert_redirected_to admin_user_path(created_user)
+    end
+
+    test "admin can edit a user" do
+      sign_in_as(@admin)
+      get edit_admin_user_path(@user)
+
+      assert_response :success
+      assert_select "form"
+    end
+
+    test "admin can update a user" do
+      sign_in_as(@admin)
+      patch admin_user_path(@user), params: { user: { name: "Updated Name", role: "admin" } }
+
+      assert_redirected_to admin_user_path(@user)
+      assert_equal "Updated Name", @user.reload.name
+      assert_equal "admin", @user.role
+    end
+
+    test "admin cannot delete themselves" do
+      sign_in_as(@admin)
+
+      assert_no_difference("User.count") do
+        delete admin_user_path(@admin)
+      end
+
+      assert_redirected_to admin_users_path
+    end
+
+    test "non-admin user is redirected for all actions" do
+      sign_in_as(@user)
+
+      get admin_users_path
+      assert_redirected_to root_path
+
+      get admin_user_path(@admin)
+      assert_redirected_to root_path
+
+      get new_admin_user_path
+      assert_redirected_to root_path
+
+      post admin_users_path, params: {
+        user: {
+          name: "Blocked User",
+          email: "blocked@example.com",
+          role: "user",
+          password: "password",
+          password_confirmation: "password"
+        }
+      }
+      assert_redirected_to root_path
+
+      get edit_admin_user_path(@admin)
+      assert_redirected_to root_path
+
+      patch admin_user_path(@admin), params: { user: { name: "Should Not Work" } }
+      assert_redirected_to root_path
+
+      delete admin_user_path(@admin)
+      assert_redirected_to root_path
+    end
+  end
+RUBY
+
 # ===== Update test fixtures to include users =====
 create_file "test/fixtures/users.yml", <<~YAML
   user:
+    name: Regular User
     email: user@example.com
     password_digest: <%= BCrypt::Password.create("password") %>
     role: user
+    last_login_at: <%= 2.hours.ago %>
 
   admin:
+    name: Admin User
     email: admin@example.com
     password_digest: <%= BCrypt::Password.create("password") %>
     role: admin
+    last_login_at: <%= 1.hour.ago %>
+YAML
+
+create_file "test/fixtures/sessions.yml", <<~YAML
+  user_session:
+    user: user
+    token: user_token_123
+    ip_address: 127.0.0.1
+    user_agent: Test Browser
+
+  admin_session:
+    user: admin
+    token: admin_token_456
+    ip_address: 127.0.0.1
+    user_agent: Test Browser
 YAML
 
 say "✓ Testing infrastructure configured", :green
