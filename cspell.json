@@ -94,7 +94,8 @@
     "mmap",
     "autocheckpoint",
     "journaling",
-    "checkpointing"
+    "checkpointing",
+    "autorun"
   ],
   "ignoreWords": [],
   "ignorePaths": [

@@ -6,8 +6,8 @@ create_file "storage/db/.gitkeep"
 
 # Rewrite config/database.yml with SQLite pragmas tuned to avoid
 # "database is locked" errors under concurrent access: WAL journaling lets
-# readers and a writer run concurrently, and busy_timeout/timeout keep
-# writers waiting instead of failing immediately. Written directly (rather
+# readers and a writer run concurrently, and timeout keeps writers waiting
+# instead of failing immediately. Written directly (rather
 # than patched via gsub) since Rails' generated defaults already changed
 # shape across versions and a direct rewrite doesn't depend on matching them.
 create_file "config/database.yml", <<~YAML, force: true
@@ -18,17 +18,14 @@ create_file "config/database.yml", <<~YAML, force: true
   #   gem "sqlite3"
   #
   # journal_mode: wal lets readers and a writer proceed concurrently instead
-  # of blocking each other. busy_timeout (pragma) and timeout (adapter option,
-  # the Ruby-side busy handler) are kept equal in every environment below —
-  # mismatched values are a common cause of sporadic "database is locked"
-  # errors.
+  # of blocking each other. timeout configures sqlite3's Ruby-side busy handler,
+  # so busy_timeout is intentionally not set as a pragma.
   default_pragmas: &default_pragmas
     journal_mode: wal
     synchronous: normal
     temp_store: memory
     mmap_size: 134217728
     cache_size: -20000
-    busy_timeout: 5000
     wal_autocheckpoint: 10000
 
   default: &default
@@ -59,7 +56,6 @@ create_file "config/database.yml", <<~YAML, force: true
       <<: *default_pragmas
       mmap_size: 268435456
       synchronous: "OFF"
-      busy_timeout: 20000
       wal_autocheckpoint: 0
 
   # SQLite3 writes its data on the local filesystem, as such it requires
@@ -97,4 +93,4 @@ GITIGNORE
 
 say "✓ Database structure configured", :green
 say "  SQLite databases will be stored in storage/db/", :white
-say "  WAL mode, matched busy_timeout/timeout, and per-environment pragmas applied", :white
+say "  WAL mode, timeout lock waits, and per-environment pragmas applied", :white

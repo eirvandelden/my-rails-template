@@ -260,9 +260,13 @@ if File.exist?(readme_path)
 
     `config/database.yml` tunes SQLite for concurrent access in every environment:
     - `journal_mode: wal` lets readers and a writer proceed at the same time instead of blocking each other.
-    - `timeout` (the Ruby-side busy handler) and the `busy_timeout` pragma are always set to the *same* value — a mismatch between the two is a common cause of sporadic "database is locked" errors.
-    - `test` relaxes durability (`synchronous: "OFF"`, no WAL auto-checkpointing) and raises the timeout, since tests run multi-threaded (see Parallel Testing above) against one shared file and don't need crash durability.
-    - `production` splits `primary`/`cache`/`queue`/`cable` into separate database files under `storage/db/` so Solid Queue/Cache/Cable don't contend with application writes on the same file.
+    - `timeout` uses sqlite3's Ruby-side busy handler for lock waits; `busy_timeout` is not also set as a
+      pragma, because that would replace the handler.
+    - `test` relaxes durability (`synchronous: "OFF"`, no WAL auto-checkpointing) and raises the timeout,
+      since tests run multi-threaded (see Parallel Testing above) against one shared file and don't need crash
+      durability.
+    - `production` splits `primary`/`cache`/`queue`/`cable` into separate database files under `storage/db/` so
+      Solid Queue/Cache/Cable don't contend with application writes on the same file.
 
     When writing a background job that iterates and writes to the same table, prefer plucking IDs over `find_each`:
 
