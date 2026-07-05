@@ -90,7 +90,11 @@
     "noreply",
     "starttls",
     "smtp",
-    "SMTP"
+    "SMTP",
+    "mmap",
+    "autocheckpoint",
+    "journaling",
+    "checkpointing"
   ],
   "ignoreWords": [],
   "ignorePaths": [
