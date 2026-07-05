@@ -256,6 +256,30 @@ if File.exist?(readme_path)
 
     Reference: `db/seeds_private.rb.example`
 
+    ### SQLite
+
+    `config/database.yml` tunes SQLite for concurrent access in every environment:
+    - `journal_mode: wal` lets readers and a writer proceed at the same time instead of blocking each other.
+    - `timeout` uses sqlite3's Ruby-side busy handler for lock waits; `busy_timeout` is not also set as a
+      pragma, because that would replace the handler.
+    - `test` relaxes durability (`synchronous: "OFF"`, no WAL auto-checkpointing) and raises the timeout,
+      since tests run multi-threaded (see Parallel Testing above) against one shared file and don't need crash
+      durability.
+    - `production` splits `primary`/`cache`/`queue`/`cable` into separate database files under `storage/db/` so
+      Solid Queue/Cache/Cable don't contend with application writes on the same file.
+
+    When writing a background job that iterates and writes to the same table, prefer plucking IDs over `find_each`:
+
+    ```ruby
+    # Avoid: find_each keeps a read cursor open while writing, holding up other writers
+    Vehicle.where(stale: true).find_each { |v| v.update!(checked_at: Time.current) }
+
+    # Prefer: pluck IDs to close the cursor immediately, then write in small batches
+    Vehicle.where(stale: true).pluck(:id).each_slice(50) do |batch_ids|
+      Vehicle.where(id: batch_ids).each { |v| v.update!(checked_at: Time.current) }
+    end
+    ```
+
     ### Security
 
     **Content Security Policy**: Configured in `config/initializers/content_security_policy.rb`
