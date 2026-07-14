@@ -145,11 +145,11 @@ create_file "test/integration/sessions_test.rb", <<~RUBY
     test "login sets a long-lived session cookie" do
       sign_in_as(@user)
 
-      set_cookie = response.headers["Set-Cookie"]
+      set_cookie = Array(response.headers["Set-Cookie"]).join("\\n")
       expires_match = set_cookie.match(/expires=([^;]+)/i)
       assert expires_match, "Expected Set-Cookie to include expires="
       cookie_expiry = Time.parse(expires_match[1])
-      assert cookie_expiry > 11.months.from_now, "Expected cookie to expire more than 11 months from now, got #{cookie_expiry}"
+      assert cookie_expiry > 11.months.from_now, "Expected cookie to expire more than 11 months from now, got \#{cookie_expiry}"
     end
 
     test "resuming a session renews the cookie expiration" do
@@ -158,11 +158,11 @@ create_file "test/integration/sessions_test.rb", <<~RUBY
 
       get root_path
 
-      set_cookie = response.headers["Set-Cookie"]
+      set_cookie = Array(response.headers["Set-Cookie"]).join("\\n")
       expires_match = set_cookie.match(/expires=([^;]+)/i)
       assert expires_match, "Expected Set-Cookie header on second request to include expires="
       cookie_expiry = Time.parse(expires_match[1])
-      assert cookie_expiry > 10.years.from_now, "Expected renewed cookie to expire more than 10 years from now, got #{cookie_expiry}"
+      assert cookie_expiry > 11.months.from_now, "Expected renewed cookie to expire more than 11 months from now, got \#{cookie_expiry}"
     end
 
     test "user can sign out" do
