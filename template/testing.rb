@@ -142,6 +142,29 @@ create_file "test/integration/sessions_test.rb", <<~RUBY
       assert_equal root_path, path
     end
 
+    test "login sets a long-lived session cookie" do
+      sign_in_as(@user)
+
+      set_cookie = response.headers["Set-Cookie"]
+      expires_match = set_cookie.match(/expires=([^;]+)/i)
+      assert expires_match, "Expected Set-Cookie to include expires="
+      cookie_expiry = Time.parse(expires_match[1])
+      assert cookie_expiry > 10.years.from_now, "Expected cookie to expire more than 10 years from now, got #{cookie_expiry}"
+    end
+
+    test "resuming a session renews the cookie expiration" do
+      sign_in_as(@user)
+      follow_redirect!
+
+      get root_path
+
+      set_cookie = response.headers["Set-Cookie"]
+      expires_match = set_cookie.match(/expires=([^;]+)/i)
+      assert expires_match, "Expected Set-Cookie header on second request to include expires="
+      cookie_expiry = Time.parse(expires_match[1])
+      assert cookie_expiry > 10.years.from_now, "Expected renewed cookie to expire more than 10 years from now, got #{cookie_expiry}"
+    end
+
     test "user can sign out" do
       sign_in_as(@user)
       sign_out
@@ -150,12 +173,6 @@ create_file "test/integration/sessions_test.rb", <<~RUBY
       follow_redirect!
 
       assert_equal new_session_path, path
-    end
-
-    test "invalid email does not sign in user" do
-      sign_in_as(users(:user))
-      # User should redirect to signin page on failure
-      # (implementation depends on your auth setup)
     end
   end
 RUBY
