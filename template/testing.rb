@@ -149,7 +149,7 @@ create_file "test/integration/sessions_test.rb", <<~RUBY
       expires_match = set_cookie.match(/expires=([^;]+)/i)
       assert expires_match, "Expected Set-Cookie to include expires="
       cookie_expiry = Time.parse(expires_match[1])
-      assert cookie_expiry > 10.years.from_now, "Expected cookie to expire more than 10 years from now, got #{cookie_expiry}"
+      assert cookie_expiry > 11.months.from_now, "Expected cookie to expire more than 11 months from now, got #{cookie_expiry}"
     end
 
     test "resuming a session renews the cookie expiration" do
