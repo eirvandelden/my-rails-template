@@ -41,8 +41,9 @@ rails app:template LOCATION=/path/to/template/gems.rb
 # Run bundle
 bundle install
 
-# Apply authentication (skip if you already have it)
-rails app:template LOCATION=/path/to/template/authentication.rb
+# Apply the appkit engine wiring (skip if you already have auth/theme set up)
+rails app:template LOCATION=/path/to/template/models.rb
+rails app:template LOCATION=/path/to/template/appkit.rb
 
 # Apply other modules as needed
 rails app:template LOCATION=/path/to/template/email.rb
@@ -64,8 +65,8 @@ The template assumes a fresh Rails app, so you may need to:
 
 **If you already have authentication:**
 ```bash
-# Skip template/authentication.rb and template/sessions.rb
-# Or review and merge concepts into your existing auth system
+# Skip template/appkit.rb, or review its diff and merge the include Appkit::*
+# lines into your existing User/Session models and ApplicationController
 ```
 
 **If you already have CSS:**
@@ -118,7 +119,7 @@ safe_modules = %w[
 review_modules = %w[
   gems
   solid
-  authentication
+  appkit
   authorization
   models
   email
@@ -153,17 +154,19 @@ TEMPLATE_PATH=/path/to/my-rails-template rails app:template LOCATION=apply_templ
 **Conflicts**: If you already have these, skip this module
 **Resolution**: Check `config/queue.yml`, `config/cache.yml` before applying
 
-### authentication.rb
-**What it does**: Creates Authentication concern
-**Conflicts**: High - if you have existing auth (Devise, custom, etc.)
-**Resolution**: Skip if you have auth, or merge concepts manually
-
 ### models.rb
 **What it does**: Creates User and Session models
 **Conflicts**: Very high - likely conflicts with existing User model
-**Resolution**: 
+**Resolution**:
 - If no User model: Apply as-is
 - If User model exists: Skip this, manually add `enum :role` and sessions
+
+### appkit.rb
+**What it does**: Wires the app onto the [appkit](https://github.com/eirvandelden/appkit) engine - mounts
+session auth/PWA/theme routes, adds `Appkit::Authenticatable`/`Appkit::UserTheming`/`Appkit::SessionBehavior`
+to the User/Session models, adds the initializer, JS controller registrations, and CSS imports
+**Conflicts**: High - if you have existing auth (Devise, custom, etc.) or theme system
+**Resolution**: Skip if you have auth, or review the diff and merge the `include Appkit::*` lines manually
 
 ### email.rb
 **What it does**: Sets up mailer system, templates, test helpers
@@ -198,10 +201,9 @@ rails app:template LOCATION=template/gems.rb
 bundle install
 rails app:template LOCATION=template/solid.rb
 rails app:template LOCATION=template/current.rb
-rails app:template LOCATION=template/authentication.rb
 rails app:template LOCATION=template/authorization.rb
 rails app:template LOCATION=template/models.rb
-rails app:template LOCATION=template/sessions.rb
+rails app:template LOCATION=template/appkit.rb
 rails app:template LOCATION=template/admin.rb
 rails app:template LOCATION=template/routes.rb
 rails app:template LOCATION=template/config.rb
@@ -210,7 +212,7 @@ rails db:migrate
 
 ### Scenario 2: Existing App with Authentication
 ```bash
-# Skip authentication/models/sessions/admin
+# Skip appkit/models/admin
 # Just add supporting infrastructure
 rails app:template LOCATION=template/gems.rb
 bundle install
@@ -300,9 +302,9 @@ If you encounter issues:
 Instead of applying whole modules, you can copy specific code:
 
 ```bash
-# Just want the Authentication concern?
-cp template/authentication.rb /tmp/
-# Review /tmp/authentication.rb
+# Just want the appkit engine wiring?
+cp template/appkit.rb /tmp/
+# Review /tmp/appkit.rb
 # Manually copy the parts you want into your app
 
 # Just want the RuboCop config?

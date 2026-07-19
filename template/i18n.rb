@@ -2,11 +2,16 @@
 
 say "Setting up i18n...", :blue
 
-# Configure available locales
-gsub_file "config/application.rb", /# config\.i18n\.default_locale = :de/, <<~RUBY.strip
-  config.i18n.available_locales = %i[en nl it]
-    config.i18n.default_locale = :en
-    config.i18n.fallbacks = true
+# Configure available locales. Rails 8.1's default config/application.rb no
+# longer ships the commented-out `config.i18n.default_locale = :de` line this
+# used to anchor on, so without this, config.i18n.available_locales is never
+# set and Rails falls back to every locale file on the load path - including
+# the 100+ rails-i18n ships - which breaks locale-restricted tests/UI.
+gsub_file "config/application.rb", /(config\.load_defaults \d+\.\d+\n)/, <<~RUBY
+  \\1
+      config.i18n.available_locales = %i[en nl it]
+      config.i18n.default_locale = :en
+      config.i18n.fallbacks = true
 RUBY
 
 # English locale
@@ -18,17 +23,6 @@ create_file "config/locales/en.yml", <<~YAML
       nl: "Nederlands"
       it: "Italiano"
 
-    color_schemes:
-      system: "System"
-      light: "Light"
-      dark: "Dark"
-
-    themes:
-      white: "White"
-      selenized_light: "Selenized Light"
-      black: "Black"
-      selenized_dark: "Selenized Dark"
-
     nav:
       home: "Home"
       preferences: "Preferences"
@@ -37,37 +31,12 @@ create_file "config/locales/en.yml", <<~YAML
     sessions:
       sign_in: "Sign in"
       sign_out: "Sign out"
-      new:
-        title: "Sign in"
-        email: "Email"
-        password: "Password"
-        submit: "Sign in"
-      create:
-        success: "Signed in successfully"
-        failure: "Invalid email or password"
-      destroy:
-        success: "Signed out successfully"
 
     home:
       index:
         welcome: "Welcome"
         signed_in_as: "You are signed in as %{email} (%{role})"
         admin_panel: "Admin Panel"
-
-    preferences:
-      edit:
-        title: "Preferences"
-        language: "Language"
-        locale: "Locale"
-        timezone: "Timezone"
-        appearance: "Appearance"
-        color_scheme: "Color Scheme"
-        color_scheme_hint: "System follows your device settings"
-        light_theme: "Light Theme"
-        dark_theme: "Dark Theme"
-        submit: "Save Preferences"
-      update:
-        success: "Preferences updated successfully"
 
     admin:
       title: "Admin"
@@ -153,17 +122,6 @@ create_file "config/locales/nl.yml", <<~YAML
       nl: "Nederlands"
       it: "Italiano"
 
-    color_schemes:
-      system: "Systeem"
-      light: "Licht"
-      dark: "Donker"
-
-    themes:
-      white: "Wit"
-      selenized_light: "Selenized Licht"
-      black: "Zwart"
-      selenized_dark: "Selenized Donker"
-
     nav:
       home: "Home"
       preferences: "Voorkeuren"
@@ -172,37 +130,12 @@ create_file "config/locales/nl.yml", <<~YAML
     sessions:
       sign_in: "Inloggen"
       sign_out: "Uitloggen"
-      new:
-        title: "Inloggen"
-        email: "E-mail"
-        password: "Wachtwoord"
-        submit: "Inloggen"
-      create:
-        success: "Succesvol ingelogd"
-        failure: "Ongeldige e-mail of wachtwoord"
-      destroy:
-        success: "Succesvol uitgelogd"
 
     home:
       index:
         welcome: "Welkom"
         signed_in_as: "Je bent ingelogd als %{email} (%{role})"
         admin_panel: "Beheerpaneel"
-
-    preferences:
-      edit:
-        title: "Voorkeuren"
-        language: "Taal"
-        locale: "Taal"
-        timezone: "Tijdzone"
-        appearance: "Weergave"
-        color_scheme: "Kleurenschema"
-        color_scheme_hint: "Systeem volgt je apparaatinstellingen"
-        light_theme: "Licht thema"
-        dark_theme: "Donker thema"
-        submit: "Voorkeuren opslaan"
-      update:
-        success: "Voorkeuren succesvol bijgewerkt"
 
     admin:
       title: "Beheer"
@@ -288,17 +221,6 @@ create_file "config/locales/it.yml", <<~YAML
       nl: "Nederlands"
       it: "Italiano"
 
-    color_schemes:
-      system: "Sistema"
-      light: "Chiaro"
-      dark: "Scuro"
-
-    themes:
-      white: "Bianco"
-      selenized_light: "Selenized Chiaro"
-      black: "Nero"
-      selenized_dark: "Selenized Scuro"
-
     nav:
       home: "Home"
       preferences: "Preferenze"
@@ -307,37 +229,12 @@ create_file "config/locales/it.yml", <<~YAML
     sessions:
       sign_in: "Accedi"
       sign_out: "Esci"
-      new:
-        title: "Accedi"
-        email: "Email"
-        password: "Password"
-        submit: "Accedi"
-      create:
-        success: "Accesso effettuato"
-        failure: "Email o password non validi"
-      destroy:
-        success: "Disconnessione effettuata"
 
     home:
       index:
         welcome: "Benvenuto"
         signed_in_as: "Hai effettuato l'accesso come %{email} (%{role})"
         admin_panel: "Pannello Admin"
-
-    preferences:
-      edit:
-        title: "Preferenze"
-        language: "Lingua"
-        locale: "Lingua"
-        timezone: "Fuso orario"
-        appearance: "Aspetto"
-        color_scheme: "Schema colori"
-        color_scheme_hint: "Sistema segue le impostazioni del dispositivo"
-        light_theme: "Tema chiaro"
-        dark_theme: "Tema scuro"
-        submit: "Salva preferenze"
-      update:
-        success: "Preferenze aggiornate"
 
     admin:
       title: "Admin"
@@ -520,10 +417,6 @@ create_file "test/integration/i18n_test.rb", <<~RUBY
       session_keys = %w[
         sessions.sign_in
         sessions.sign_out
-        sessions.new.title
-        sessions.new.email
-        sessions.new.password
-        sessions.new.submit
       ]
 
       I18n.available_locales.each do |locale|

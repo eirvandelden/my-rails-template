@@ -15,15 +15,14 @@ my-rails-template/
 │   ├── gems.rb                   # Gem dependencies
 │   ├── solid.rb                  # Solid Queue/Cache/Cable installation
 │   ├── current.rb                # Current attributes setup
-│   ├── authentication.rb         # Authentication concern
-│   ├── authorization.rb          # Authorization concern
+│   ├── authorization.rb          # Authorization concern (role-based, app-side)
 │   ├── models.rb                 # User & Session models
-│   ├── sessions.rb               # Sessions controller & views
 │   ├── admin.rb                  # Admin panel
 │   ├── routes.rb                 # Route configuration
 │   ├── home.rb                   # Home controller & view
 │   ├── email.rb                  # Email system
 │   ├── css.rb                    # CSS setup
+│   ├── appkit.rb                 # appkit engine: auth, PWA/push, theme/preferences
 │   ├── config.rb                 # Config files (RuboCop, Lefthook, etc.)
 │   ├── deployment.rb             # Kamal setup
 │   ├── seeds.rb                  # Database seeds
@@ -42,7 +41,8 @@ Rails templates support the `apply` method to load other Ruby files:
 apply "template/gems.rb"
 
 after_bundle do
-  apply "template/authentication.rb"
+  apply "template/models.rb"
+  apply "template/appkit.rb"
   apply "template/email.rb"
 end
 ```
@@ -78,7 +78,7 @@ The main `template.rb` acts as a table of contents:
 
 ```ruby
 apply "template/gems.rb"
-apply "template/authentication.rb"
+apply "template/appkit.rb"
 apply "template/email.rb"
 ```
 
@@ -107,7 +107,8 @@ apply "template/gems.rb"
 
 after_bundle do
   apply "template/solid.rb"
-  apply "template/authentication.rb"
+  apply "template/models.rb"
+  apply "template/appkit.rb"
   # apply "template/email.rb"     # Skip email
   # apply "template/admin.rb"     # Skip admin panel
   apply "template/css.rb"
@@ -122,21 +123,25 @@ end
 | `gems.rb`           | Adds all gem dependencies           | ~40   |
 | `solid.rb`          | Installs Solid Queue/Cache/Cable    | ~15   |
 | `current.rb`        | Creates Current attributes class    | ~10   |
-| `authentication.rb` | Session-based authentication logic  | ~70   |
-| `authorization.rb`  | Role-based authorization            | ~20   |
+| `authorization.rb`  | Role-based authorization (app-side) | ~15   |
 | `models.rb`         | User & Session model setup          | ~50   |
-| `sessions.rb`       | Sign in/out functionality           | ~60   |
 | `admin.rb`          | Admin panel for user management     | ~150  |
 | `routes.rb`         | Configure routes                    | ~5    |
 | `home.rb`           | Home page & layout                  | ~40   |
 | `email.rb`          | Complete email system               | ~200  |
 | `css.rb`            | MVP.css + SMACSS structure          | ~150  |
+| `appkit.rb`         | Wires the appkit engine: session auth, PWA/push, theme/preferences | ~150 |
 | `config.rb`         | RuboCop, Lefthook, .env, Procfile   | ~100  |
 | `deployment.rb`     | Kamal deployment setup              | ~180  |
 | `seeds.rb`          | Default user accounts               | ~20   |
 | `finish.rb`         | Migrations, seeds, git, success msg | ~50   |
 
-Total: ~1,160 lines spread across 16 focused files instead of one 1,160-line file.
+The actual auth/theme *logic* lives in the [appkit](https://github.com/eirvandelden/appkit) gem, not this
+repo - `appkit.rb` only wires a freshly-generated app onto it (Gemfile entry, routes mount, initializer,
+model includes, JS/CSS glue). Engine fixes reach generated apps via `bundle update appkit`, no template
+change required.
+
+Total: ~1,160 lines spread across focused files instead of one 1,160-line file.
 
 ## Comparison: Before vs After
 

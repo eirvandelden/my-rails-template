@@ -9,7 +9,9 @@ if File.exist?(readme_path)
   features_update = <<~FEATURES
     ## Features
 
-    - **Authentication**: Secure session-based authentication with has_secure_password
+    - **Authentication**: Session auth, first-run bootstrap, session transfer/QR handoff via the appkit engine
+    - **PWA & Push**: Installable PWA with web push notifications via the appkit engine
+    - **Theme/Preferences**: Light/dark theme switching and user preferences via the appkit engine
     - **Authorization**: Role-based access control (admin, user)
     - **Data Migrations**: Separate data migrations from schema migrations using data_migrate gem
     - **Rails Extensions**: Organized framework extensions in `lib/rails_ext/`
@@ -23,7 +25,6 @@ if File.exist?(readme_path)
     - **Private Seeds**: Optional `db/seeds_private.rb` for local development data
     - **Custom Rake Tasks**: Directory structure for custom maintenance tasks
     - **Internationalization**: Multi-language support (nl, en, it)
-    - **Theme System**: Light/dark theme support with user preferences
     - **Email Support**: ActionMailer configured with example welcome email
     - **Background Jobs**: Solid Queue for asynchronous job processing
   FEATURES
@@ -149,8 +150,8 @@ if File.exist?(readme_path)
     app/
       controllers/
         concerns/
-          - authentication.rb      (session management)
-          - authorization.rb       (role-based access control)
+          - authorization.rb       (role-based access control, app-side)
+          (session auth comes from the appkit engine, not a local concern)
       models/
         - user.rb                  (with timezone support)
         - session.rb
