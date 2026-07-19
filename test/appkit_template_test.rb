@@ -5,7 +5,8 @@ class AppkitTemplateTest < Minitest::Test
     assert_match(/apply "#\{TEMPLATE_ROOT\}\/template\/appkit\.rb"/, template_rb)
 
     %w[authentication.rb sessions.rb preferences.rb theme_system.rb].each do |deleted|
-      assert_no_match(/template\/#{Regexp.escape(deleted)}"/, template_rb, "expected template.rb to no longer apply #{deleted}")
+      assert_nil(template_rb[/template\/#{Regexp.escape(deleted)}"/],
+                 "expected template.rb to no longer apply #{deleted}")
     end
   end
 
@@ -63,7 +64,7 @@ class AppkitTemplateTest < Minitest::Test
   def test_authorization_module_no_longer_references_the_deleted_authentication_concern
     authorization_rb = File.read("template/authorization.rb")
 
-    assert_no_match(/include Authentication\b/, authorization_rb)
+    assert_nil(authorization_rb[/include Authentication\b/])
     assert_match(/include Authorization/, authorization_rb)
   end
 
