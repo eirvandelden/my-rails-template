@@ -64,13 +64,19 @@ RUBY
 
 # Completely rewrite the Session model: Appkit::SessionBehavior supplies
 # has_secure_token, the last_active_at tracking, and Session.start!/#resume
-# (superseding the ad hoc token generation models.rb generated).
+# (superseding the ad hoc token generation models.rb generated). A new
+# Session row is created on every sign-in (Appkit::Authentication#
+# start_new_session_for), so that's also where user.last_login_at gets
+# touched - the engine only tracks last_active_at on the session itself,
+# not last_login_at on the user.
 remove_file "app/models/session.rb"
 create_file "app/models/session.rb", <<~RUBY
   class Session < ApplicationRecord
     include Appkit::SessionBehavior
 
     belongs_to :user
+
+    after_create -> { user.touch(:last_login_at) }
   end
 RUBY
 
@@ -85,8 +91,27 @@ gsub_file "config/routes.rb",
 # own ApplicationController by constant lookup, not an explicit include - but
 # Appkit::Authentication (before_action :require_authentication, helper_method
 # :signed_in?) does need including, same as Authorization already is.
+#
+# Appkit::Authentication restores Current.user but deliberately does not
+# touch I18n.locale/Time.zone - it's host-app state, not auth state, and
+# every other app built on this engine sets it here the same way. Without
+# this, a signed-in user's locale/timezone preference (editable via
+# appkit's preferences page) has no effect on anything.
 inject_into_class "app/controllers/application_controller.rb", "ApplicationController", <<~RUBY
   include Appkit::Authentication
+
+  before_action :set_locale
+  around_action :set_time_zone, if: -> { Current.user }
+
+  private
+
+  def set_locale
+    I18n.locale = Current.user&.locale || I18n.default_locale
+  end
+
+  def set_time_zone(&block)
+    Time.use_zone(Current.user.time_zone, &block)
+  end
 RUBY
 
 # Configuration - fill in the placeholders below for your app.

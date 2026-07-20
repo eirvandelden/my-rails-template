@@ -72,6 +72,27 @@ class AppkitTemplateTest < Minitest::Test
     assert_match(/config\.first_run/, appkit_rb)
   end
 
+  # Regression test: Appkit::Authentication restores Current.user but
+  # deliberately leaves I18n.locale/Time.zone untouched (host-app state, not
+  # auth state) - every one of the four apps built on this engine sets it in
+  # their own ApplicationController the same way. Without it, a signed-in
+  # user's locale/timezone preference has no effect on anything.
+  def test_application_controller_sets_locale_and_time_zone_from_current_user
+    assert_match(/before_action :set_locale/, appkit_rb)
+    assert_match(/around_action :set_time_zone/, appkit_rb)
+    assert_match(/I18n\.locale = Current\.user&\.locale/, appkit_rb)
+    assert_match(/Time\.use_zone\(Current\.user\.time_zone/, appkit_rb)
+  end
+
+  # Regression test: the engine's SessionBehavior only tracks
+  # sessions.last_active_at, not a user-level last_login_at - the admin
+  # dashboard this template generates sorts users by and displays
+  # last_login_at, so it needs to be touched somewhere. A new Session row is
+  # created on every sign-in, so that's the natural hook.
+  def test_session_model_touches_user_last_login_at_on_create
+    assert_match(/after_create.*user\.touch\(:last_login_at\)/, appkit_rb)
+  end
+
   private
 
   def template_rb
