@@ -93,6 +93,23 @@ class AppkitTemplateTest < Minitest::Test
     assert_match(/after_create.*user\.touch\(:last_login_at\)/, appkit_rb)
   end
 
+  # Regression test: SessionBehavior tracks last_active_at but relies on
+  # Appkit::SessionExpiryJob to destroy stale rows - nothing scheduled it, so
+  # a session past its cookie's expiry stayed valid forever via direct token
+  # replay. solid.rb runs before appkit.rb, so config/recurring.yml already
+  # exists with its default production: key by the time this appends.
+  def test_appkit_module_runs_after_solid_queue_is_installed
+    apply_order = File.read("template.rb").scan(/apply "#\{TEMPLATE_ROOT\}\/template\/(\w+)\.rb"/).flatten
+
+    assert_operator apply_order.index("solid"), :<, apply_order.index("appkit")
+  end
+
+  def test_appkit_module_schedules_the_session_expiry_job
+    assert_match(/config\/recurring\.yml/, appkit_rb)
+    assert_match(/appkit_session_expiry/, appkit_rb)
+    assert_match(/class: Appkit::SessionExpiryJob/, appkit_rb)
+  end
+
   private
 
   def template_rb

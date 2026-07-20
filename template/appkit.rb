@@ -80,6 +80,18 @@ create_file "app/models/session.rb", <<~RUBY
   end
 RUBY
 
+# Appkit::SessionBehavior tracks last_active_at but relies on
+# Appkit::SessionExpiryJob to actually destroy stale rows - nothing schedules
+# it by default. Without this, a session past its cookie's expiry keeps
+# working forever via direct token replay (cookie lookup never checks
+# last_active_at itself). solid.rb already installed Solid Queue and its
+# default config/recurring.yml, so append to that.
+append_to_file "config/recurring.yml", <<YAML
+  appkit_session_expiry:
+    class: Appkit::SessionExpiryJob
+    schedule: every day at midnight
+YAML
+
 # Mount the engine (session auth, first-run bootstrap, session transfer/QR
 # handoff, preferences, PWA manifest/service worker, push subscriptions) in
 # place of the routes models.rb's siblings used to define locally.
