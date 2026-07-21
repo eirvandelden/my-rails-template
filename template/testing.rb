@@ -23,7 +23,7 @@ create_file "test/helpers/session_test_helper.rb", <<~RUBY
     #   assert_response :success
     def sign_in_as(user)
       post session_path, params: {
-        email: user.email,
+        email_address: user.email,
         password: "password"
       }
     end
@@ -71,9 +71,9 @@ create_file "test/helpers/session_test_helper.rb", <<~RUBY
     #   assert_text "Dashboard"
     def system_sign_in_as(user)
       visit new_session_path
-      fill_in "Email", with: user.email
-      fill_in "Password", with: "password"
-      click_button I18n.t("sessions.sign_in")
+      fill_in I18n.t("appkit.sessions.new.email_placeholder"), with: user.email
+      fill_in I18n.t("appkit.sessions.new.password_placeholder"), with: "password"
+      click_button I18n.t("appkit.sessions.new.submit")
     end
   end
 RUBY
@@ -112,8 +112,7 @@ create_file "test/system/authentication_test.rb", <<~RUBY
       system_sign_in_as(@user)
       click_button I18n.t("sessions.sign_out")
 
-      assert_current_path new_session_path
-      assert_text I18n.t("sessions.new")
+      assert_current_path root_path
     end
 
     test "user cannot access without signing in" do
@@ -172,7 +171,24 @@ create_file "test/integration/sessions_test.rb", <<~RUBY
       assert_response :redirect
       follow_redirect!
 
-      assert_equal new_session_path, path
+      assert_equal root_path, path
+    end
+
+    test "unauthenticated user visiting protected route is redirected to sign in" do
+      get edit_preferences_path
+
+      assert_redirected_to new_session_path
+    end
+
+    test "invalid credentials do not sign in user" do
+      post session_path, params: {
+        email_address: @user.email,
+        password: "wrong-password"
+      }
+
+      assert_response :unauthorized
+      get edit_preferences_path
+      assert_redirected_to new_session_path
     end
   end
 RUBY
@@ -350,12 +366,14 @@ create_file "test/fixtures/sessions.yml", <<~YAML
     token: user_token_123
     ip_address: 127.0.0.1
     user_agent: Test Browser
+    last_active_at: <%= 2.hours.ago %>
 
   admin_session:
     user: admin
     token: admin_token_456
     ip_address: 127.0.0.1
     user_agent: Test Browser
+    last_active_at: <%= 1.hour.ago %>
 YAML
 
 say "✓ Testing infrastructure configured", :green

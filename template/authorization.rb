@@ -15,8 +15,8 @@ create_file "app/controllers/concerns/authorization.rb", <<~RUBY
   end
 RUBY
 
-# Include concerns in ApplicationController
+# Include this concern in ApplicationController. Appkit::Authentication is
+# included separately by template/appkit.rb (which runs after this module).
 inject_into_class "app/controllers/application_controller.rb", "ApplicationController", <<~RUBY
-  include Authentication
   include Authorization
 RUBY

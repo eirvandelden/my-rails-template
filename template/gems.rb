@@ -9,6 +9,9 @@ gem "bcrypt"
 # MVPA.css - Classless CSS framework
 gem "mvpa-css", github: "eirvandelden/mvpa.css"
 
+# Appkit - session auth, PWA/push, and theme/preferences (see template/appkit.rb)
+gem "appkit", github: "eirvandelden/appkit"
+
 # Development and test gems
 gem_group :development, :test do
   # rubocop-rails-omakase and brakeman are included in Rails 8+ by default

@@ -4,10 +4,11 @@ A comprehensive Rails 8.1+ application template with authentication, authorizati
 
 ## Features
 
-### Authentication & Authorization
+### Authentication, PWA & Authorization
 
-- **Session-based Authentication** - Secure authentication without Devise
-- **Role-based Authorization** - User and Admin roles with access control
+- **[appkit](https://github.com/eirvandelden/appkit)** - Shared Rails engine for session auth, first-run bootstrap, session
+  transfer/QR handoff, PWA installability with web push, and theme/preferences - see `template/appkit.rb`
+- **Role-based Authorization** - User and Admin roles with access control (stays app-side, not engine functionality)
 - **Admin Panel** - User management interface for administrators
 
 ### CSS Framework
@@ -50,7 +51,7 @@ rails new myapp -m https://raw.githubusercontent.com/YOUR_USERNAME/my-rails-temp
 
 ### For Existing Applications
 
-To apply this template to an existing Rails app, see [APPLY_TO_EXISTING.md](APPLY_TO_EXISTING.md) for detailed instructions on safely applying modules to your existing codebase.
+For versioned upgrades to an existing Rails app, see [UPGRADING.md](UPGRADING.md).
 
 ## Template Structure
 
@@ -62,15 +63,14 @@ template/
   ├── gems.rb           # Gem dependencies
   ├── solid.rb          # Solid Queue/Cache/Cable setup
   ├── current.rb        # Current context class
-  ├── authentication.rb # Authentication concern
-  ├── authorization.rb  # Authorization concern
+  ├── authorization.rb  # Authorization concern (role-based, app-side)
   ├── models.rb         # User and Session models
-  ├── sessions.rb       # Sessions controller and views
   ├── admin.rb          # Admin panel
   ├── routes.rb         # Route configuration
   ├── home.rb           # Home page
   ├── email.rb          # Email system setup
   ├── css.rb            # CSS structure (MVPA.css framework)
+  ├── appkit.rb         # appkit engine wiring (auth, PWA/push, theme/preferences)
   ├── config.rb         # Configuration files (.env, RuboCop, etc.)
   ├── deployment.rb     # Kamal deployment setup
   ├── seeds.rb          # Database seeds
@@ -86,7 +86,8 @@ apply "template/gems.rb"
 
 after_bundle do
   apply "template/solid.rb"
-  apply "template/authentication.rb"
+  apply "template/models.rb"
+  apply "template/appkit.rb"
   # ... etc
 end
 ```
@@ -103,7 +104,9 @@ This approach:
 To customize the template, simply edit the relevant module files:
 
 - **Add/remove gems**: Edit `template/gems.rb`
-- **Modify authentication**: Edit `template/authentication.rb`
+- **Modify authentication, PWA/push, or theme/preferences wiring**: Edit `template/appkit.rb` - the auth/theme
+  logic itself lives in the [appkit](https://github.com/eirvandelden/appkit) gem, not this repo, so engine fixes
+  arrive via `bundle update appkit` in generated apps without a template change
 - **Change CSS setup**: Edit `template/css.rb`
 - **Skip features**: Comment out `apply` calls in `template.rb`
 
@@ -133,7 +136,7 @@ The template creates two default users:
 ## Documentation
 
 - [CSS_GUIDE.md](CSS_GUIDE.md) - Complete CSS system guide with Selenized themes
-- [APPLY_TO_EXISTING.md](APPLY_TO_EXISTING.md) - Apply template to existing Rails apps
+- [UPGRADING.md](UPGRADING.md) - Versioned template upgrades
 - [TEMPLATE_STRUCTURE.md](TEMPLATE_STRUCTURE.md) - Explanation of modular structure
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment with Kamal (auto-created in new apps)
 - [agents.md](agents.md) - Instructions for AI coding assistants
@@ -172,10 +175,12 @@ The template creates two default users:
 
 ### Authentication
 
-- Session-based with signed cookies
-- `Current` class for thread-safe context
-- `Authentication` concern in controllers
-- Sessions track user_agent and ip_address
+- Provided by the [appkit](https://github.com/eirvandelden/appkit) engine: session-based with signed cookies,
+  first-run bootstrap, session transfer/QR handoff
+- `Current` class for thread-safe context (`user`, `session`)
+- `Appkit::Authentication` concern in controllers, `Appkit::Authenticatable`/`Appkit::SessionBehavior` on the
+  User/Session models
+- Sessions track user_agent, ip_address, and last_active_at
 
 ### Authorization
 
