@@ -51,7 +51,7 @@ rails new myapp -m https://raw.githubusercontent.com/YOUR_USERNAME/my-rails-temp
 
 ### For Existing Applications
 
-To apply this template to an existing Rails app, see [APPLY_TO_EXISTING.md](APPLY_TO_EXISTING.md) for detailed instructions on safely applying modules to your existing codebase.
+For versioned upgrades to an existing Rails app, see [UPGRADING.md](UPGRADING.md).
 
 ## Template Structure
 
@@ -136,7 +136,7 @@ The template creates two default users:
 ## Documentation
 
 - [CSS_GUIDE.md](CSS_GUIDE.md) - Complete CSS system guide with Selenized themes
-- [APPLY_TO_EXISTING.md](APPLY_TO_EXISTING.md) - Apply template to existing Rails apps
+- [UPGRADING.md](UPGRADING.md) - Versioned template upgrades
 - [TEMPLATE_STRUCTURE.md](TEMPLATE_STRUCTURE.md) - Explanation of modular structure
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment with Kamal (auto-created in new apps)
 - [agents.md](agents.md) - Instructions for AI coding assistants
