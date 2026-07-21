@@ -53,6 +53,13 @@ class AppkitTemplateTest < Minitest::Test
     assert_match(/include Appkit::SessionBehavior/, appkit_rb)
   end
 
+  def test_user_migration_supports_appkit_deactivation
+    models_rb = File.read("template/models.rb")
+
+    assert_match(/"active:boolean"/, models_rb)
+    assert_match(/t\.boolean :active, default: true, null: false/, models_rb)
+  end
+
   def test_routes_mount_the_engine
     assert_match(/mount Appkit::Engine/, appkit_rb)
   end

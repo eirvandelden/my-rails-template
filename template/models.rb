@@ -5,6 +5,7 @@ generate :model, "User",
   "name:string",
   "email:string:uniq",
   "password_digest:string",
+  "active:boolean",
   "role:integer",
   "last_login_at:datetime",
   "locale:string",
@@ -84,6 +85,7 @@ inject_into_file Dir["db/migrate/*_create_users.rb"].first,
   <<-RUBY
       t.string :email, null: false
       t.string :password_digest, null: false
+      t.boolean :active, default: true, null: false
       t.integer :role, default: 0, null: false
       t.string :locale, default: "en", null: false
       t.string :timezone, default: "UTC", null: false
@@ -96,6 +98,7 @@ end
 # Remove the duplicate column definitions that Rails generates
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.string :email$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.string :password_digest$/, ""
+gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.boolean :active$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.integer :role$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.string :locale$/, ""
 gsub_file Dir["db/migrate/*_create_users.rb"].first, /^      t\.string :timezone$/, ""
