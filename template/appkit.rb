@@ -221,6 +221,7 @@ create_file "app/views/layouts/application.html.erb", <<~ERB
     </head>
 
     <body>
+      <%= render "appkit/shared/skip_link" %>
       <header>
         <nav>
           <%= link_to_unless_current t("nav.home"), root_path %>
@@ -236,7 +237,7 @@ create_file "app/views/layouts/application.html.erb", <<~ERB
         </nav>
       </header>
 
-      <main>
+      <main id="main">
         <%= render "appkit/shared/flashes" %>
 
         <%= yield %>
@@ -285,6 +286,7 @@ create_file "app/views/layouts/admin.html.erb", <<~ERB
     </head>
 
     <body>
+      <%= render "appkit/shared/skip_link" %>
       <header>
         <nav>
           <%= link_to t("admin.nav.dashboard"), admin_root_path %>
@@ -295,7 +297,7 @@ create_file "app/views/layouts/admin.html.erb", <<~ERB
         </nav>
       </header>
 
-      <main>
+      <main id="main">
         <%= render "appkit/shared/flashes" %>
 
         <%= yield %>
