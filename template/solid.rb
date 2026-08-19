@@ -1,13 +1,15 @@
 # Solid Trifecta installation
 
-say "Installing Solid Queue...", :blue
+say "📦 Installing Solid Queue...", :blue
 rails_command "solid_queue:install"
 
-say "Installing Solid Cache...", :blue
+say "📦 Installing Solid Cache...", :blue
 rails_command "solid_cache:install"
 
-say "Installing Solid Cable...", :blue
+say "📦 Installing Solid Cable...", :blue
 rails_command "solid_cable:install"
+
+say "✅ Solid trifecta installed!", :green
 
 # Mission Control removed - brings Bulma CSS which conflicts with classless approach
 # If you need job monitoring, use the Rails console or add a custom admin page

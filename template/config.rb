@@ -1,7 +1,7 @@
 # Configuration files
 
 # Create symlink to agents.md from dotfiles
-say "Creating agents.md symlink...", :blue
+say "🔗 Creating agents.md symlink...", :blue
 run "ln -sf ~/Developer/dotfiles/AGENTS.md agents.md"
 
 # Copy RuboCop configuration from template

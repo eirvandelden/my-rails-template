@@ -1,6 +1,6 @@
 # I18n configuration and locale files
 
-say "Setting up i18n...", :blue
+say "🌍 Setting up i18n...", :blue
 
 # Configure available locales. Rails 8.1's default config/application.rb no
 # longer ships the commented-out `config.i18n.default_locale = :de` line this
@@ -24,80 +24,75 @@ create_file "config/locales/en.yml", <<~YAML
       it: "Italiano"
 
     nav:
-      home: "Home"
-      preferences: "Preferences"
-      admin: "Admin"
+      home: "🏠 Home"
+      preferences: "⚙️ Preferences"
+      admin: "👑 Admin"
 
     sessions:
-      sign_in: "Sign in"
-      sign_out: "Sign out"
+      sign_in: "🔑 Sign in"
+      sign_out: "👋 Sign out"
+      new:
+        title: "🔐 Sign in"
+        email: "📧 Email"
+        password: "🔒 Password"
+        submit: "Sign in"
+      create:
+        success: "✅ Signed in successfully"
+        failure: "❌ Invalid email or password"
+      destroy:
+        success: "👋 Signed out successfully"
 
     home:
       index:
-        welcome: "Welcome"
+        welcome: "👋 Welcome"
         signed_in_as: "You are signed in as %{email} (%{role})"
-        admin_panel: "Admin Panel"
+        admin_panel: "👑 Admin Panel"
+
+    preferences:
+      edit:
+        title: "⚙️ Preferences"
+        language: "🌍 Language"
+        locale: "Locale"
+        appearance: "🎨 Appearance"
+        color_scheme: "Color Scheme"
+        color_scheme_hint: "System follows your device settings"
+        light_theme: "☀️ Light Theme"
+        dark_theme: "🌙 Dark Theme"
+        submit: "💾 Save Preferences"
+      update:
+        success: "✅ Preferences updated successfully"
 
     admin:
-      title: "Admin"
+      title: "👑 Admin"
       nav:
-        dashboard: "Dashboard"
-        users: "Users"
-        faultline: "Faultline"
-        back_to_site: "Back to Site"
-      dashboard:
-        index:
-          title: "Dashboard"
-          summary: "Summary"
-          total_users: "Total Users"
-          admin_users: "Admin Users"
-          recent_logins: "Recent Logins"
-          name: "Name"
-          email: "Email"
-          role: "Role"
-          last_login_at: "Last Login"
-          actions: "Actions"
-          no_name: "-"
-          never: "Never"
-          view: "View"
-          edit: "Edit"
+        dashboard: "📊 Dashboard"
+        users: "👥 Users"
+        back_to_site: "← Back to Site"
       users:
         index:
-          title: "User Management"
-          new_user: "New User"
-          name: "Name"
+          title: "👥 User Management"
           email: "Email"
           role: "Role"
           last_login_at: "Last Login"
           created_at: "Created"
           actions: "Actions"
-          no_name: "-"
-          never: "Never"
-          view: "View"
-          edit: "Edit"
-          delete: "Delete"
-          confirm_delete: "Are you sure you want to delete this user?"
+          view: "👁️ View"
+          edit: "✏️ Edit"
+          delete: "🗑️ Delete"
+          confirm_delete: "⚠️ Are you sure you want to delete this user?"
         show:
-          title: "User Details"
-          name: "Name"
-          no_name: "-"
-          email: "Email"
-          role: "Role"
-          last_login_at: "Last Login"
-          never: "Never"
-          created_at: "Created"
-          active_sessions: "Active Sessions"
-          edit: "Edit"
-          back: "Back"
-        new:
-          title: "New User"
-          submit: "Create User"
-        form:
-          name: "Name"
-          email: "Email"
-          role: "Role"
-          password: "Password"
-          password_confirmation: "Confirm Password"
+          title: "👤 User Details"
+          email: "📧 Email"
+          role: "🎭 Role"
+          created_at: "📅 Created"
+          active_sessions: "🔗 Active Sessions"
+          edit: "✏️ Edit"
+          back: "← Back"
+        edit:
+          title: "✏️ Edit User"
+          email: "📧 Email"
+          role: "🎭 Role"
+          submit: "💾 Update User"
           cancel: "Cancel"
         create:
           success: "User created successfully"
@@ -105,10 +100,10 @@ create_file "config/locales/en.yml", <<~YAML
           title: "Edit User"
           submit: "Update User"
         update:
-          success: "User updated successfully"
+          success: "✅ User updated successfully"
         destroy:
-          success: "User deleted successfully"
-          cannot_delete_self: "You cannot delete yourself"
+          success: "✅ User deleted successfully"
+          cannot_delete_self: "⚠️ You cannot delete yourself"
 
     footer:
       copyright: "© %{year} %{app_name}"
@@ -123,80 +118,75 @@ create_file "config/locales/nl.yml", <<~YAML
       it: "Italiano"
 
     nav:
-      home: "Home"
-      preferences: "Voorkeuren"
-      admin: "Beheer"
+      home: "🏠 Home"
+      preferences: "⚙️ Voorkeuren"
+      admin: "👑 Beheer"
 
     sessions:
-      sign_in: "Inloggen"
-      sign_out: "Uitloggen"
+      sign_in: "🔑 Inloggen"
+      sign_out: "👋 Uitloggen"
+      new:
+        title: "🔐 Inloggen"
+        email: "📧 E-mail"
+        password: "🔒 Wachtwoord"
+        submit: "Inloggen"
+      create:
+        success: "✅ Succesvol ingelogd"
+        failure: "❌ Ongeldige e-mail of wachtwoord"
+      destroy:
+        success: "👋 Succesvol uitgelogd"
 
     home:
       index:
-        welcome: "Welkom"
+        welcome: "👋 Welkom"
         signed_in_as: "Je bent ingelogd als %{email} (%{role})"
-        admin_panel: "Beheerpaneel"
+        admin_panel: "👑 Beheerpaneel"
+
+    preferences:
+      edit:
+        title: "⚙️ Voorkeuren"
+        language: "🌍 Taal"
+        locale: "Taal"
+        appearance: "🎨 Weergave"
+        color_scheme: "Kleurenschema"
+        color_scheme_hint: "Systeem volgt je apparaatinstellingen"
+        light_theme: "☀️ Licht thema"
+        dark_theme: "🌙 Donker thema"
+        submit: "💾 Voorkeuren opslaan"
+      update:
+        success: "✅ Voorkeuren succesvol bijgewerkt"
 
     admin:
-      title: "Beheer"
+      title: "👑 Beheer"
       nav:
-        dashboard: "Dashboard"
-        users: "Gebruikers"
-        faultline: "Faultline"
-        back_to_site: "Terug naar site"
-      dashboard:
-        index:
-          title: "Dashboard"
-          summary: "Overzicht"
-          total_users: "Totaal gebruikers"
-          admin_users: "Admin-gebruikers"
-          recent_logins: "Recente logins"
-          name: "Naam"
-          email: "E-mail"
-          role: "Rol"
-          last_login_at: "Laatste login"
-          actions: "Acties"
-          no_name: "-"
-          never: "Nooit"
-          view: "Bekijken"
-          edit: "Bewerken"
+        dashboard: "📊 Dashboard"
+        users: "👥 Gebruikers"
+        back_to_site: "← Terug naar site"
       users:
         index:
-          title: "Gebruikersbeheer"
-          new_user: "Nieuwe gebruiker"
-          name: "Naam"
+          title: "👥 Gebruikersbeheer"
           email: "E-mail"
           role: "Rol"
           last_login_at: "Laatste login"
           created_at: "Aangemaakt"
           actions: "Acties"
-          no_name: "-"
-          never: "Nooit"
-          view: "Bekijken"
-          edit: "Bewerken"
-          delete: "Verwijderen"
-          confirm_delete: "Weet je zeker dat je deze gebruiker wilt verwijderen?"
+          view: "👁️ Bekijken"
+          edit: "✏️ Bewerken"
+          delete: "🗑️ Verwijderen"
+          confirm_delete: "⚠️ Weet je zeker dat je deze gebruiker wilt verwijderen?"
         show:
-          title: "Gebruikersdetails"
-          name: "Naam"
-          no_name: "-"
-          email: "E-mail"
-          role: "Rol"
-          last_login_at: "Laatste login"
-          never: "Nooit"
-          created_at: "Aangemaakt"
-          active_sessions: "Actieve sessies"
-          edit: "Bewerken"
-          back: "Terug"
-        new:
-          title: "Nieuwe gebruiker"
-          submit: "Gebruiker aanmaken"
-        form:
-          name: "Naam"
-          email: "E-mail"
-          role: "Rol"
-          password: "Wachtwoord"
-          password_confirmation: "Bevestig wachtwoord"
+          title: "👤 Gebruikersdetails"
+          email: "📧 E-mail"
+          role: "🎭 Rol"
+          created_at: "📅 Aangemaakt"
+          active_sessions: "🔗 Actieve sessies"
+          edit: "✏️ Bewerken"
+          back: "← Terug"
+        edit:
+          title: "✏️ Gebruiker bewerken"
+          email: "📧 E-mail"
+          role: "🎭 Rol"
+          submit: "💾 Gebruiker bijwerken"
           cancel: "Annuleren"
         create:
           success: "Gebruiker succesvol aangemaakt"
@@ -204,10 +194,10 @@ create_file "config/locales/nl.yml", <<~YAML
           title: "Gebruiker bewerken"
           submit: "Gebruiker bijwerken"
         update:
-          success: "Gebruiker succesvol bijgewerkt"
+          success: "✅ Gebruiker succesvol bijgewerkt"
         destroy:
-          success: "Gebruiker succesvol verwijderd"
-          cannot_delete_self: "Je kunt jezelf niet verwijderen"
+          success: "✅ Gebruiker succesvol verwijderd"
+          cannot_delete_self: "⚠️ Je kunt jezelf niet verwijderen"
 
     footer:
       copyright: "© %{year} %{app_name}"
@@ -222,80 +212,75 @@ create_file "config/locales/it.yml", <<~YAML
       it: "Italiano"
 
     nav:
-      home: "Home"
-      preferences: "Preferenze"
-      admin: "Admin"
+      home: "🏠 Home"
+      preferences: "⚙️ Preferenze"
+      admin: "👑 Admin"
 
     sessions:
-      sign_in: "Accedi"
-      sign_out: "Esci"
+      sign_in: "🔑 Accedi"
+      sign_out: "👋 Esci"
+      new:
+        title: "🔐 Accedi"
+        email: "📧 Email"
+        password: "🔒 Password"
+        submit: "Accedi"
+      create:
+        success: "✅ Accesso effettuato"
+        failure: "❌ Email o password non validi"
+      destroy:
+        success: "👋 Disconnessione effettuata"
 
     home:
       index:
-        welcome: "Benvenuto"
+        welcome: "👋 Benvenuto"
         signed_in_as: "Hai effettuato l'accesso come %{email} (%{role})"
-        admin_panel: "Pannello Admin"
+        admin_panel: "👑 Pannello Admin"
+
+    preferences:
+      edit:
+        title: "⚙️ Preferenze"
+        language: "🌍 Lingua"
+        locale: "Lingua"
+        appearance: "🎨 Aspetto"
+        color_scheme: "Schema colori"
+        color_scheme_hint: "Sistema segue le impostazioni del dispositivo"
+        light_theme: "☀️ Tema chiaro"
+        dark_theme: "🌙 Tema scuro"
+        submit: "💾 Salva preferenze"
+      update:
+        success: "✅ Preferenze aggiornate"
 
     admin:
-      title: "Admin"
+      title: "👑 Admin"
       nav:
-        dashboard: "Dashboard"
-        users: "Utenti"
-        faultline: "Faultline"
-        back_to_site: "Torna al sito"
-      dashboard:
-        index:
-          title: "Dashboard"
-          summary: "Riepilogo"
-          total_users: "Utenti totali"
-          admin_users: "Utenti admin"
-          recent_logins: "Accessi recenti"
-          name: "Nome"
-          email: "Email"
-          role: "Ruolo"
-          last_login_at: "Ultimo accesso"
-          actions: "Azioni"
-          no_name: "-"
-          never: "Mai"
-          view: "Visualizza"
-          edit: "Modifica"
+        dashboard: "📊 Dashboard"
+        users: "👥 Utenti"
+        back_to_site: "← Torna al sito"
       users:
         index:
-          title: "Gestione utenti"
-          new_user: "Nuovo utente"
-          name: "Nome"
+          title: "👥 Gestione utenti"
           email: "Email"
           role: "Ruolo"
           last_login_at: "Ultimo accesso"
           created_at: "Creato"
           actions: "Azioni"
-          no_name: "-"
-          never: "Mai"
-          view: "Visualizza"
-          edit: "Modifica"
-          delete: "Elimina"
-          confirm_delete: "Sei sicuro di voler eliminare questo utente?"
+          view: "👁️ Visualizza"
+          edit: "✏️ Modifica"
+          delete: "🗑️ Elimina"
+          confirm_delete: "⚠️ Sei sicuro di voler eliminare questo utente?"
         show:
-          title: "Dettagli utente"
-          name: "Nome"
-          no_name: "-"
-          email: "Email"
-          role: "Ruolo"
-          last_login_at: "Ultimo accesso"
-          never: "Mai"
-          created_at: "Creato"
-          active_sessions: "Sessioni attive"
-          edit: "Modifica"
-          back: "Indietro"
-        new:
-          title: "Nuovo utente"
-          submit: "Crea utente"
-        form:
-          name: "Nome"
-          email: "Email"
-          role: "Ruolo"
-          password: "Password"
-          password_confirmation: "Conferma password"
+          title: "👤 Dettagli utente"
+          email: "📧 Email"
+          role: "🎭 Ruolo"
+          created_at: "📅 Creato"
+          active_sessions: "🔗 Sessioni attive"
+          edit: "✏️ Modifica"
+          back: "← Indietro"
+        edit:
+          title: "✏️ Modifica utente"
+          email: "📧 Email"
+          role: "🎭 Ruolo"
+          submit: "💾 Aggiorna utente"
           cancel: "Annulla"
         create:
           success: "Utente creato con successo"
@@ -303,10 +288,10 @@ create_file "config/locales/it.yml", <<~YAML
           title: "Modifica utente"
           submit: "Aggiorna utente"
         update:
-          success: "Utente aggiornato"
+          success: "✅ Utente aggiornato"
         destroy:
-          success: "Utente eliminato"
-          cannot_delete_self: "Non puoi eliminare te stesso"
+          success: "✅ Utente eliminato"
+          cannot_delete_self: "⚠️ Non puoi eliminare te stesso"
 
     footer:
       copyright: "© %{year} %{app_name}"
@@ -436,6 +421,6 @@ create_file "test/integration/i18n_test.rb", <<~RUBY
   end
 RUBY
 
-say "✓ I18n configured with en, nl, it locales", :green
-say "✓ i18n-tasks configuration created", :green
-say "✓ I18n test helpers created", :green
+say "✅ I18n configured with en, nl, it locales!", :green
+say "✅ i18n-tasks configuration created!", :green
+say "✅ I18n test helpers created!", :green

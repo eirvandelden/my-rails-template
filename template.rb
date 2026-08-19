@@ -5,10 +5,19 @@
 # Get the directory where this template is located
 TEMPLATE_ROOT = File.expand_path(File.dirname(__FILE__))
 
+say ""
+say "🚂 Rails Application Template", :magenta
+say "━" * 40, :magenta
+say ""
+
 # Apply modular template components
+say "💎 Configuring gems...", :blue
 apply "#{TEMPLATE_ROOT}/template/gems.rb"
 
 after_bundle do
+  say ""
+  say "🔧 Building application...", :blue
+  say ""
   apply "#{TEMPLATE_ROOT}/template/solid.rb"
   apply "#{TEMPLATE_ROOT}/template/data_migrate.rb"
   apply "#{TEMPLATE_ROOT}/template/rails_extensions.rb"

@@ -1,7 +1,7 @@
 # Deployment configuration
 
 # Initialize Kamal for deployment
-say "Setting up Kamal deployment...", :blue
+say "🚀 Setting up Kamal deployment...", :blue
 run "bundle exec kamal init"
 
 # Update DEPLOYMENT.md

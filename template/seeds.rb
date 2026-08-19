@@ -9,7 +9,7 @@ gsub_file "db/seeds.rb", /.*/m, <<~RUBY
     user.role = :admin
     user.locale = "nl"
   end
-  puts "Created admin user: etienne@localhost / Testtest1"
+  puts "👑 Created admin user: etienne@localhost / Testtest1"
 
   # Create regular user
   user = User.find_or_create_by!(email: "user@localhost") do |user|
@@ -26,6 +26,7 @@ gsub_file "db/seeds.rb", /.*/m, <<~RUBY
     puts "Loading private seeds..."
     load private_seeds
   end
+  puts "👤 Created regular user: user@localhost / Testtest1"
 RUBY
 
 # Create example seeds_private.rb file

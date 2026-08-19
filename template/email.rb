@@ -1,6 +1,6 @@
 # Email system configuration
 
-say "Setting up email system...", :blue
+say "📧 Setting up email system...", :blue
 
 # Create ApplicationMailer
 gsub_file "app/mailers/application_mailer.rb", /class ApplicationMailer.*end\nend/m do
