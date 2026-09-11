@@ -1,5 +1,9 @@
 # Claude Code
 .claude/
+.claude/settings.local.json
+.claude/.cc-writes
+.claude/worktrees/
+.claude/scheduled_tasks.lock
 
 # OS
 .DS_Store
