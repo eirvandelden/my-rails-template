@@ -96,3 +96,28 @@ Totals: 0 Important, 1 Nit.
 `codex review --base origin/main`: no findings. The conflict markers are removed, the admin step points to the dashboard, and both new test files pass; the only suite failure is the pre-existing `AppkitTemplateTest#test_deleted_template_files_are_gone`.
 
 Totals: 0 Important, 0 Nit.
+
+## Round 7 — 2026-10-08T12:02Z — 4dc9308
+
+Criteria: no `REVIEW.md` or `REVIEW.local.md` at the repository root, so the default Bugs, Security and Compliance passes apply. This round covers the full diff against `origin/main`, with focus on `4dc9308`, the fix for the round 5 nit. The working tree is clean.
+
+No findings.
+
+### Bugs
+
+- The round 5 nit is fixed. `syntax_error` passes `-W0`, so the first stderr line is the syntax error, not a parse warning.
+- `test_syntax_check_reports_the_error_rather_than_a_warning` pins the fix. Mutation on a scratch copy: without `-W0` the test fails with `Expected /:2: syntax error/ to match "…:1: warning: key :a is duplicated and overwritten on line 1"`. With `-W0` it passes.
+- The test's regex holds on both parsers. Prism prints `:2: syntax errors found`, and `ruby --parser=parse.y -W0 -c` prints `:2: syntax error, unexpected end-of-input`. With parse.y, `-W0` also suppresses the duplicate-key warning. Ruby 3.3.10 is installed but has no `minitest`, so the suite itself ran only on 4.0.7.
+
+### Security
+
+- Nothing found. `Open3.capture3` keeps the array form with no shell; the path comes from a fixed glob or from `Tempfile`.
+
+### Compliance
+
+- AC1 to AC4 keep the same test coverage as round 1; every test named in the plan's `## Proof` exists. The new warning test is an addition beyond the Proof list that follows from the round 5 finding.
+- The diff still touches only `template/finish.rb`, the two new test files and the change folder. No existing test was weakened, skipped or deleted.
+- Suite: all green except the pre-existing `AppkitTemplateTest#test_deleted_template_files_are_gone`, which is out of scope. `test/template_syntax_test.rb` passes under `LANG=C LC_ALL=C` (6 runs, 0 failures). RuboCop reports no offenses on the three changed files. A per-file `ruby -c` over `template.rb` and `template/*.rb` reports no failure.
+- The manual `rails new` evidence from plan step 6 is still not on the branch; it belongs in the coordinator's account or the pull request body.
+
+Totals: 0 Important, 0 Nit.
