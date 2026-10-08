@@ -1,6 +1,7 @@
 require "minitest/autorun"
 require "open3"
 require "rbconfig"
+require "tempfile"
 
 class TemplateSyntaxTest < Minitest::Test
   CONFLICT_MARKER = /\A(?:<{7}|\|{7}|={7}|>{7})(?: |\z)/
@@ -21,8 +22,8 @@ class TemplateSyntaxTest < Minitest::Test
   end
 
   def test_syntax_check_rejects_invalid_ruby
-    refute_nil syntax_error('say "a" <<<')
-    assert_nil syntax_error('say "a", :cyan')
+    refute_nil syntax_error_in_source('say "a" <<<')
+    assert_nil syntax_error_in_source('say "a", :cyan')
   end
 
   def test_template_files_cover_the_orchestrator_and_every_module
@@ -33,7 +34,7 @@ class TemplateSyntaxTest < Minitest::Test
 
   def test_every_template_module_is_free_of_conflict_markers
     offenses = template_files.flat_map do |path|
-      conflict_marker_lines(File.read(path)).map { |line| "#{path}:#{line}" }
+      conflict_marker_lines(File.read(path, encoding: "UTF-8")).map { |line| "#{path}:#{line}" }
     end
 
     assert_empty offenses, "Conflict markers found"
@@ -41,7 +42,7 @@ class TemplateSyntaxTest < Minitest::Test
 
   def test_every_template_module_is_valid_ruby
     offenses = template_files.filter_map do |path|
-      error = syntax_error(File.read(path))
+      error = syntax_error(path)
       "#{path}: #{error}" if error
     end
 
@@ -60,8 +61,16 @@ class TemplateSyntaxTest < Minitest::Test
     end
   end
 
-  def syntax_error(source)
-    _output, error, status = Open3.capture3(RbConfig.ruby, "-c", stdin_data: source)
+  def syntax_error(path)
+    _output, error, status = Open3.capture3(RbConfig.ruby, "-c", path)
     error.lines.first.to_s.chomp unless status.success?
+  end
+
+  def syntax_error_in_source(source)
+    Tempfile.create([ "sample", ".rb" ]) do |file|
+      file.write(source)
+      file.flush
+      syntax_error(file.path)
+    end
   end
 end

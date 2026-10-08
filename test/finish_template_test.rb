@@ -18,7 +18,7 @@ class FinishRecorder
   def git(*); end
 
   def apply(path)
-    instance_eval(File.read(path), path)
+    instance_eval(File.read(path, encoding: "UTF-8"), path)
   end
 end
 
