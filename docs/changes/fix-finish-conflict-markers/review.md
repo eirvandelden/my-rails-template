@@ -121,3 +121,9 @@ No findings.
 - The manual `rails new` evidence from plan step 6 is still not on the branch; it belongs in the coordinator's account or the pull request body.
 
 Totals: 0 Important, 0 Nit.
+
+## Round 8 — 2026-10-08T12:02Z — 4dc9308 (codex)
+
+- [ ] Important: Wire the regression tests into the documented test workflow. The documented commands do not run `test/finish_template_test.rb` or `test/template_syntax_test.rb`, and no runner discovers them. Add them to the documented commands or another test entry point. — `test/template_syntax_test.rb:6` → dismissed: Etienne decided on 2026-10-08 that `AGENTS.md` stays as is, with no follow-up change; the plan lists the commands under Out of scope.
+
+Totals: 1 Important, 0 Nit.
