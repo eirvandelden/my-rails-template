@@ -27,3 +27,9 @@ Criteria: no `REVIEW.md` or `REVIEW.local.md` at the repository root, so the def
 - Suite: all green except the pre-existing `AppkitTemplateTest#test_deleted_template_files_are_gone`, which is out of scope. RuboCop reports no offenses on the three changed files. A per-file `ruby -c` over `template.rb` and `template/*.rb` reports no failure.
 
 Totals: 0 Important, 1 Nit.
+
+## Round 2 — 2026-10-08T11:55Z — 9553a22 (codex)
+
+`codex review --base origin/main`: no findings. The change removes the conflict markers and keeps the admin dashboard URL; both new test files pass.
+
+Totals: 0 Important, 0 Nit.
