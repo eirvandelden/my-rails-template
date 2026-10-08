@@ -65,3 +65,28 @@ Totals: 0 Important, 1 Nit.
 `codex review --base origin/main`: no findings. The finish step has no conflict markers and keeps the admin dashboard URL; both new test files pass and the diff has no whitespace errors.
 
 Totals: 0 Important, 0 Nit.
+
+## Round 5 — 2026-10-08T12:00Z — 02686b4
+
+Criteria: no `REVIEW.md` or `REVIEW.local.md` at the repository root, so the default Bugs, Security and Compliance passes apply. This round covers the full diff against `origin/main`, with focus on `02686b4`, the fix for the round 3 nit. The working tree is clean.
+
+- [ ] Nit: A parse warning hides the syntax error in the failure message. `syntax_error` returns the first stderr line, and `ruby -c` prints parse warnings before the error. A file with `h = {a: 1, a: 2}` on line 1 and an unclosed `def` on line 2 reports `<path>:1: warning: key :a is duplicated and overwritten on line 1`, not the `:2: syntax errors found` line. The guard still fails, because it checks the exit status; only the message points at the wrong line. No template emits a warning today. Verified fix: pass `-W0` (`Open3.capture3(RbConfig.ruby, "-W0", "-c", path)`); the first line is then the error. Present since round 1, not introduced by `02686b4`. — `test/template_syntax_test.rb:65`
+
+### Bugs
+
+- The round 3 nit is fixed. Fault injection on a scratch copy: an unclosed `def` appended to `template/seeds.rb` now reads `template/seeds.rb:48: syntax errors found (SyntaxError)`, and the pre-fix `finish.rb` reads `template/finish.rb:43: syntax errors found (SyntaxError)`. The path appears once and the interpreter path is gone. The marker test still names `template/finish.rb:43`, `:46` and `:49`.
+- `delete_prefix("#{RbConfig.ruby}: ")` matches because `Open3.capture3` passes `RbConfig.ruby` as `argv[0]`, and Ruby prefixes the error with `argv[0]`. On a Ruby whose message has no such prefix, `delete_prefix` is a no-op, so the message stays correct.
+- `test_syntax_check_rejects_invalid_ruby` now also asserts that the message excludes the interpreter path. That pins the round 3 fix.
+
+### Security
+
+- Nothing found. `Open3.capture3` keeps the array form with no shell; the path comes from a fixed glob or from `Tempfile`.
+
+### Compliance
+
+- AC1 to AC4 keep the same test coverage as round 1; every test named in the plan's `## Proof` exists.
+- The diff still touches only `template/finish.rb`, the two new test files and the change folder. No existing test was weakened, skipped or deleted.
+- Suite: all green except the pre-existing `AppkitTemplateTest#test_deleted_template_files_are_gone`, which is out of scope. `test/template_syntax_test.rb` passes under `LANG=C LC_ALL=C`. RuboCop reports no offenses on the three changed files. A per-file `ruby -c` over `template.rb` and `template/*.rb` reports no failure.
+- The manual `rails new` evidence from plan step 6 is still not on the branch; it belongs in the coordinator's account or the pull request body.
+
+Totals: 0 Important, 1 Nit.
