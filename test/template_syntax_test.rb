@@ -29,6 +29,12 @@ class TemplateSyntaxTest < Minitest::Test
     assert_nil syntax_error_in_source('say "a", :cyan')
   end
 
+  def test_syntax_check_reports_the_error_rather_than_a_warning
+    error = syntax_error_in_source("h = { a: 1, a: 2 }\ndef broken\n")
+
+    assert_match(/:2: syntax error/, error)
+  end
+
   def test_template_files_cover_the_orchestrator_and_every_module
     assert_includes template_files, "template.rb"
     assert_includes template_files, "template/finish.rb"
@@ -62,7 +68,7 @@ class TemplateSyntaxTest < Minitest::Test
   end
 
   def syntax_error(path)
-    _output, error, status = Open3.capture3(RbConfig.ruby, "-c", path)
+    _output, error, status = Open3.capture3(RbConfig.ruby, "-W0", "-c", path)
     error.lines.first.to_s.delete_prefix("#{RbConfig.ruby}: ").chomp unless status.success?
   end
 

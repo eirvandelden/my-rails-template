@@ -70,7 +70,7 @@ Totals: 0 Important, 0 Nit.
 
 Criteria: no `REVIEW.md` or `REVIEW.local.md` at the repository root, so the default Bugs, Security and Compliance passes apply. This round covers the full diff against `origin/main`, with focus on `02686b4`, the fix for the round 3 nit. The working tree is clean.
 
-- [ ] Nit: A parse warning hides the syntax error in the failure message. `syntax_error` returns the first stderr line, and `ruby -c` prints parse warnings before the error. A file with `h = {a: 1, a: 2}` on line 1 and an unclosed `def` on line 2 reports `<path>:1: warning: key :a is duplicated and overwritten on line 1`, not the `:2: syntax errors found` line. The guard still fails, because it checks the exit status; only the message points at the wrong line. No template emits a warning today. Verified fix: pass `-W0` (`Open3.capture3(RbConfig.ruby, "-W0", "-c", path)`); the first line is then the error. Present since round 1, not introduced by `02686b4`. — `test/template_syntax_test.rb:65`
+- [ ] Nit: A parse warning hides the syntax error in the failure message. `syntax_error` returns the first stderr line, and `ruby -c` prints parse warnings before the error. A file with `h = {a: 1, a: 2}` on line 1 and an unclosed `def` on line 2 reports `<path>:1: warning: key :a is duplicated and overwritten on line 1`, not the `:2: syntax errors found` line. The guard still fails, because it checks the exit status; only the message points at the wrong line. No template emits a warning today. Verified fix: pass `-W0` (`Open3.capture3(RbConfig.ruby, "-W0", "-c", path)`); the first line is then the error. Present since round 1, not introduced by `02686b4`. — `test/template_syntax_test.rb:65` → fixed (Silence parse warnings in the syntax guard)
 
 ### Bugs
 
