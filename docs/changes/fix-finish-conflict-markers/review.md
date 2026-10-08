@@ -33,3 +33,29 @@ Totals: 0 Important, 1 Nit.
 `codex review --base origin/main`: no findings. The change removes the conflict markers and keeps the admin dashboard URL; both new test files pass.
 
 Totals: 0 Important, 0 Nit.
+
+## Round 3 — 2026-10-08T12:10Z — 2bfb4f4
+
+Criteria: no `REVIEW.md` or `REVIEW.local.md` at the repository root, so the default Bugs, Security and Compliance passes apply. This round covers the full diff against `origin/main`, with focus on `2bfb4f4`, the fix for the round 1 nit. The working tree is clean.
+
+- [ ] Nit: The syntax failure message now repeats the path and includes the absolute interpreter path. `ruby -c <path>` prefixes stderr with the interpreter path, so an offense reads `template/seeds.rb: /Users/…/rubies/ruby-4.0.7/bin/ruby: template/seeds.rb:47: syntax errors found (SyntaxError)`. The stdin version printed `-:47: …` after the path. The message still names the file and the line, so the guard works; only the text is noisy. A possible fix: return the stderr line without the `"#{RbConfig.ruby}: "` prefix, or drop the `"#{path}: "` prefix in `test_every_template_module_is_valid_ruby`. — `test/template_syntax_test.rb:65`
+
+### Bugs
+
+- The round 1 nit is fixed. Both new test files pass under `LANG=C LC_ALL=C` (2 and 5 runs, no failures). `File.read(path, encoding: "UTF-8")` in both files and `ruby -c <path>` remove the locale dependency.
+- `syntax_error_in_source` writes the sample to a `Tempfile` with a `.rb` suffix and flushes it before the subprocess reads it. `Tempfile.create` with a block deletes the file afterwards. The self-test still proves that invalid Ruby yields an error and valid Ruby yields `nil`.
+- Fault injection on a scratch copy under `LANG=C`: the pre-fix `finish.rb` makes both finish tests error with `SyntaxError` at line 43, and the marker test names `template/finish.rb:43`, `:46` and `:49`. An unclosed `def` appended to `template/seeds.rb` fails the syntax test as `template/seeds.rb:47`. The guards still fail for the right reason.
+
+### Security
+
+- Nothing found. `Open3.capture3` keeps the array form with no shell. The path argument comes from a fixed glob or from `Tempfile`, never from user input.
+
+### Compliance
+
+- The helper shape differs from the plan: the plan specifies `syntax_error(source)` over stdin, the code now has `syntax_error(path)` plus `syntax_error_in_source(source)`. The change follows the round 1 finding and matches the intent's wording ("pass a Ruby syntax check" per file, as `ruby -c <path>`). The Proof list is unchanged and every named test exists.
+- AC1 to AC4 keep the same test coverage as round 1.
+- The diff still touches only `template/finish.rb`, the two new test files and the change folder. No existing test was weakened, skipped or deleted.
+- Suite: all green except the pre-existing `AppkitTemplateTest#test_deleted_template_files_are_gone` (`template/theme_system.rb` still exists), which is out of scope. RuboCop reports no offenses on the three changed files. A per-file `ruby -c` over `template.rb` and `template/*.rb` reports no failure.
+- The manual `rails new` evidence from plan step 6 is still not on the branch; it belongs in the coordinator's account or the pull request body.
+
+Totals: 0 Important, 1 Nit.
