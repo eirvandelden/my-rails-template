@@ -38,7 +38,7 @@ Totals: 0 Important, 0 Nit.
 
 Criteria: no `REVIEW.md` or `REVIEW.local.md` at the repository root, so the default Bugs, Security and Compliance passes apply. This round covers the full diff against `origin/main`, with focus on `2bfb4f4`, the fix for the round 1 nit. The working tree is clean.
 
-- [ ] Nit: The syntax failure message now repeats the path and includes the absolute interpreter path. `ruby -c <path>` prefixes stderr with the interpreter path, so an offense reads `template/seeds.rb: /Users/…/rubies/ruby-4.0.7/bin/ruby: template/seeds.rb:47: syntax errors found (SyntaxError)`. The stdin version printed `-:47: …` after the path. The message still names the file and the line, so the guard works; only the text is noisy. A possible fix: return the stderr line without the `"#{RbConfig.ruby}: "` prefix, or drop the `"#{path}: "` prefix in `test_every_template_module_is_valid_ruby`. — `test/template_syntax_test.rb:65`
+- [ ] Nit: The syntax failure message now repeats the path and includes the absolute interpreter path. `ruby -c <path>` prefixes stderr with the interpreter path, so an offense reads `template/seeds.rb: /Users/…/rubies/ruby-4.0.7/bin/ruby: template/seeds.rb:47: syntax errors found (SyntaxError)`. The stdin version printed `-:47: …` after the path. The message still names the file and the line, so the guard works; only the text is noisy. A possible fix: return the stderr line without the `"#{RbConfig.ruby}: "` prefix, or drop the `"#{path}: "` prefix in `test_every_template_module_is_valid_ruby`. — `test/template_syntax_test.rb:65` → fixed (Trim the interpreter path from syntax guard messages)
 
 ### Bugs
 

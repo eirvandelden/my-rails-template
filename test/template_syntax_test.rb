@@ -22,7 +22,10 @@ class TemplateSyntaxTest < Minitest::Test
   end
 
   def test_syntax_check_rejects_invalid_ruby
-    refute_nil syntax_error_in_source('say "a" <<<')
+    error = syntax_error_in_source('say "a" <<<')
+
+    refute_nil error
+    refute_includes error, RbConfig.ruby
     assert_nil syntax_error_in_source('say "a", :cyan')
   end
 
@@ -41,10 +44,7 @@ class TemplateSyntaxTest < Minitest::Test
   end
 
   def test_every_template_module_is_valid_ruby
-    offenses = template_files.filter_map do |path|
-      error = syntax_error(path)
-      "#{path}: #{error}" if error
-    end
+    offenses = template_files.filter_map { |path| syntax_error(path) }
 
     assert_empty offenses, "Ruby syntax errors found"
   end
@@ -63,7 +63,7 @@ class TemplateSyntaxTest < Minitest::Test
 
   def syntax_error(path)
     _output, error, status = Open3.capture3(RbConfig.ruby, "-c", path)
-    error.lines.first.to_s.chomp unless status.success?
+    error.lines.first.to_s.delete_prefix("#{RbConfig.ruby}: ").chomp unless status.success?
   end
 
   def syntax_error_in_source(source)
