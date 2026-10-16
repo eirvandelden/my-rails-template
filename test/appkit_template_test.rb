@@ -117,6 +117,11 @@ class AppkitTemplateTest < Minitest::Test
     assert_match(/class: Appkit::SessionExpiryJob/, appkit_rb)
   end
 
+  def test_user_defaults_are_only_set_on_new_records_without_a_callback_condition
+    refute_match(/after_initialize :set_defaults, if:/, appkit_rb)
+    assert_includes appkit_rb, "def set_defaults\n      return unless new_record?\n"
+  end
+
   private
 
   def template_rb

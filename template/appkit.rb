@@ -46,7 +46,7 @@ create_file "app/models/user.rb", <<~RUBY
     after_create_commit -> { SendWelcomeEmailJob.perform_later(self) }
 
     # Set default locale
-    after_initialize :set_defaults, if: :new_record?
+    after_initialize :set_defaults
 
     # Return timezone as ActiveSupport::TimeZone object
     def time_zone
@@ -56,6 +56,8 @@ create_file "app/models/user.rb", <<~RUBY
     private
 
     def set_defaults
+      return unless new_record?
+
       self.locale ||= "en"
       self.timezone ||= "UTC"
     end
