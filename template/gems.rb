@@ -18,10 +18,6 @@ gem_group :development, :test do
   # Only add if somehow missing
   gem "bundler-audit", require: false
   gem "rubocop-capybara", require: false
-  gem "rubocop-minitest", require: false
-  gem "rubocop-obsession", require: false
-  gem "rubocop-packaging", require: false
-  gem "rubocop-rspec", require: false
   gem "i18n-tasks"
   gem "faker"
   gem "dotenv-rails"
@@ -30,6 +26,7 @@ gem_group :development, :test do
 end
 
 gem_group :development do
+  gem "rubocop-eirvandelden", github: "eirvandelden/rubocop-eirvandelden", require: false
   gem "letter_opener"
   gem "rack-mini-profiler"
   gem "lefthook"

@@ -4,15 +4,15 @@
 say "🔗 Creating agents.md symlink...", :blue
 run "ln -sf ~/Developer/dotfiles/AGENTS.md agents.md"
 
-# Copy RuboCop configuration from template
-rubocop_source = File.join(TEMPLATE_ROOT, ".rubocop.yml")
-if File.exist?(rubocop_source)
-  # Read the actual file content (follows symlink)
-  create_file ".rubocop.yml", File.read(rubocop_source)
-  say "  ✓ Created .rubocop.yml", :green
-else
-  say "  ✗ Warning: .rubocop.yml not found in template", :yellow
-end
+# RuboCop rules come from the rubocop-eirvandelden gem; force replaces the file rails new generates
+create_file ".rubocop.yml", <<~YAML, force: true
+  inherit_gem:
+    rubocop-eirvandelden:
+      - config/default.yml
+      - config/rails.yml
+      - config/capybara.yml
+YAML
+say "  ✓ Created .rubocop.yml", :green
 
 # Copy lefthook configuration from template
 lefthook_source = File.join(TEMPLATE_ROOT, "lefthook.yml")
