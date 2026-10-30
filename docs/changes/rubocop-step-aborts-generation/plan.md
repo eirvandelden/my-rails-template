@@ -2,6 +2,8 @@
 
 From `intent.md` (amended 2026-10-30). Status: accepted.
 
+Revised 2026-10-30 after acceptance, with Etienne's answers to the two decisions the plan raised: `eslint.config.js` uses the `globals` package (`globals.browser`), and new apps get no `password_reset` mail.
+
 ## Context
 
 This plan replaces the plan of 2026-10-16. That plan covered the RuboCop part of the intent, and the branch already holds it: `31e6664` (generated `.rubocop.yml` inherits `rubocop-eirvandelden`, Gemfile changes, `test/config_template_test.rb`, `test/gems_template_test.rb`), the offense fixes `4874312`, `1ff9fd0`, `c5fdf6c`, `2cc1d77`, and the `UPGRADING.md` chapter `## 31e6664 — Take RuboCop rules from rubocop-eirvandelden` (`98dc00a`). Review round 1 found that generation still exits 1 at the initial `git commit`. The intent was amended on 2026-10-17 and 2026-10-30 to cover the git hooks, a JS and CSS lint toolchain, and the mailer tests. This plan covers that remaining work. Do not redo or revert the done work.
@@ -58,7 +60,7 @@ flowchart LR
   readme[readme_updates.rb] -->|unwraps| README[README.md]
   deployment[deployment.rb] -->|writes| DEPLOY[DEPLOYMENT.md]
   finish[finish.rb] -->|git commit| hooks[global hooks]
-  %% email.rb keeps the password_reset action and views unchanged
+  %% email.rb generates only the welcome mail; password_reset is gone
 ```
 
 Apply order after the change (only the touched part): `… email → css → appkit → config → lint_toolchain → deployment → seeds → readme_updates → finish`.
@@ -106,13 +108,14 @@ The template modules are DSL scripts with no classes or methods. Their interface
 
   ```js
   import js from "@eslint/js"
+  import globals from "globals"
 
   export default [
     { ignores: ["vendor/**", "public/**", "tmp/**"] },
     js.configs.recommended,
     {
       languageOptions: {
-        globals: { window: "readonly" }
+        globals: globals.browser
       }
     }
   ]
@@ -120,14 +123,15 @@ The template modules are DSL scripts with no classes or methods. Their interface
 
 - `create_file ".stylelintrc.json"`: `{ "extends": ["stylelint-config-standard"], "ignoreFiles": ["vendor/**", "public/**", "tmp/**"] }`, pretty-printed.
 - `append_to_file ".gitignore", "\n# npm\n/node_modules\n"`.
-- `run "npm install --save-dev eslint @eslint/js stylelint stylelint-config-standard", abort_on_failure: true`. npm adds `devDependencies` with caret ranges of the current majors to `package.json` and writes `package-lock.json`.
+- `run "npm install --save-dev eslint @eslint/js globals stylelint stylelint-config-standard", abort_on_failure: true`. npm adds `devDependencies` with caret ranges of the current majors to `package.json` and writes `package-lock.json`.
 - `say` lines in the style of the other modules.
 
 `template.rb` — adds `apply "#{TEMPLATE_ROOT}/template/lint_toolchain.rb"` directly after the `config.rb` line.
 
-`template/email.rb` — writes the user mails and their test.
+`template/email.rb` — writes the welcome mail and its test.
 
-- `generate :mailer`, the rewritten `UserMailer` and all four views stay as they are.
+- `generate :mailer, "User", "welcome"`: the `"password_reset"` argument goes, so Rails generates no `password_reset` method, views, test or preview.
+- The rewritten `UserMailer` holds only `welcome(user)`. The two `create_file` calls for `password_reset.html.erb` and `password_reset.text.erb` go. The welcome views stay as they are.
 - Adds `create_file "test/mailers/user_mailer_test.rb", <<~RUBY, force: true`:
 
   ```ruby
@@ -146,8 +150,7 @@ The template modules are DSL scripts with no classes or methods. Their interface
   ```
 
   The heredoc escapes the interpolation as `\#{`, as the existing mailer heredoc does.
-- The generated test has no `password_reset` test: that mail cannot render (no `edit_password_reset_url` route), so no correct call of it can pass.
-- Adds `create_file "test/mailers/previews/user_mailer_preview.rb", <<~RUBY, force: true`: `UserMailerPreview < ActionMailer::Preview` with `def welcome` returning `UserMailer.welcome(User.first)` and `def password_reset` returning `UserMailer.password_reset(User.first, "preview-token")`, keeping Rails' "Preview … at http://localhost:3000/rails/mailers/…" comments. The preview calls each action with the arguments it takes; the `password_reset` preview still fails to render until the route question is settled.
+- Adds `create_file "test/mailers/previews/user_mailer_preview.rb", <<~RUBY, force: true`: `UserMailerPreview < ActionMailer::Preview` with only `def welcome` returning `UserMailer.welcome(User.first)`, keeping Rails' "Preview … at http://localhost:3000/rails/mailers/…" comment.
 
 `template/i18n.rb` — removes the first (shadowed) `edit:` block under `admin.users` in each of the three locale heredocs: the block with `title`, `email`, `role`, `submit`, `cancel` that sits before `create:`. The second block (`title`, `submit`) stays, so runtime translations do not change.
 
@@ -161,7 +164,7 @@ Not checked: this repository has no Gemfile and its template modules define no m
 
 ### Complexity
 
-- Generation gains one `npm install` (one registry resolution plus downloads of four packages and their dependencies; needs network, Node and npm) and four `create_file` calls. It loses one `bundle exec lefthook install`.
+- Generation gains one `npm install` (one registry resolution plus downloads of five packages and their dependencies; needs network, Node and npm) and four `create_file` calls. It loses one `bundle exec lefthook install`.
 - The initial `git commit` now runs the global hooks over every staged file. The heavy jobs are `rubocop -a` and `erb_lint` over the whole app, once.
 - No database path, no query, no loop over input.
 
@@ -169,7 +172,7 @@ Not checked: this repository has no Gemfile and its template modules define no m
 
 - A fresh app has no `lefthook.yml`, so the global hooks apply to it. Enforced by `template/config.rb` writing none. Proved by `test/config_template_test.rb` `test_config_writes_no_lefthook_file`.
 - `npm install` finishes before `finish.rb`'s `git add .`, and generation stops if it fails. Enforced by apply order in `template.rb` and `abort_on_failure: true`. Proved by `test/lint_toolchain_template_test.rb` `test_lint_toolchain_runs_after_config_and_before_finish` and `test_npm_install_aborts_generation_on_failure`.
-- The npm dev dependencies are exactly the four approved packages. Enforced by the single `run` string. Proved by `test_npm_install_adds_exactly_the_four_approved_dev_dependencies`.
+- The npm dev dependencies are exactly the five approved packages. Enforced by the single `run` string. Proved by `test_npm_install_adds_exactly_the_five_approved_dev_dependencies`.
 - Every locale file the template writes has unique keys per mapping. Enforced by `template/i18n.rb`. Proved by `test/i18n_template_test.rb` `test_locale_files_have_no_duplicate_keys`.
 - The generated mailer test calls each mailer method with the arguments it takes. Enforced by `template/email.rb`. Proved by `test/email_template_test.rb` `test_mailer_test_calls_welcome_with_the_user_fixture`.
 
@@ -182,9 +185,9 @@ Not checked: this repository has no Gemfile and its template modules define no m
 ## Design decisions
 
 - `intent.md` has no `## Decisions` section. Its dated decisions sit in `## Constraints` and `## Flagged concerns`. Every step below was checked against them: no `--no-verify` or `LEFTHOOK=0`, the global hooks stay unchanged, only the approved dependencies change, the recommended rule sets stay as they are.
-- `eslint.config.js` declares `window` as a readonly global. This tells ESLint the browser environment that Stimulus code runs in. It is not a rule change: `no-undef` stays on, and every other undeclared name still fails. The other personal apps use the `globals` package (`globals.browser`) for this, but that package is not approved, so the template declares only the one global the generated JS uses. Raised as a decision for Etienne.
-- `password_reset` stays in the generated mailer, and the generated mailer test covers `welcome` only. No route exists for the `password_reset` link, so that mail cannot render and no correct test of it can pass. Removing the action, or adding a route, would change generated behaviour that `intent.md` does not name, so the plan does neither and raises the choice as a decision for Etienne. If he picks removal, step 5 also drops the method, the two views and the generator argument, and its tests change to match.
-- `npm install --save-dev <four packages>` writes the version ranges, instead of a `package.json` with ranges written by hand. The template then holds no version numbers nobody verified, in line with the unpinned gems in `template/gems.rb` and the `dependencies` skill. Dependabot keeps them current.
+- `eslint.config.js` declares `globals.browser` from the `globals` package (Etienne, 2026-10-30), like the other personal apps. This tells ESLint the browser environment that Stimulus code runs in. It is not a rule change: `no-undef` stays on for every name that is not a browser global.
+- `password_reset` leaves the generated app (Etienne, 2026-10-30): the generator argument, the method, both views and the preview method. Its link needs an `edit_password_reset_url` route that neither the template nor appkit defines, so it could never render. No `UPGRADING.md` chapter: no chapter names it, and apps generated earlier keep their copy.
+- `npm install --save-dev <five packages>` writes the version ranges, instead of a `package.json` with ranges written by hand. The template then holds no version numbers nobody verified, in line with the unpinned gems in `template/gems.rb` and the `dependencies` skill. Dependabot keeps them current.
 - `package.json` sets `"type": "module"`, so Node loads `eslint.config.js` as ESM without syntax detection.
 - The Stylelint config is `.stylelintrc.json`: JSON needs no module loader, and ESLint does not lint it.
 - `ignores`/`ignoreFiles` list `vendor/**` (third-party code, per the intent), `public/**` (precompiled assets) and `tmp/**`. ESLint and Stylelint skip `node_modules` by default.
@@ -199,7 +202,7 @@ Not checked: this repository has no Gemfile and its template modules define no m
 
 - Rails' `rails new` generator and Thor actions (`create_file`, `append_to_file`, `run`, `generate`, `apply`).
 - The global hooks: `~/.config/git/hooks/pre-commit` and `commit-msg`, `~/Developer/dotfiles/lefthook.yml`, the global yamllint config, `~/.config/markdownlint/no-hardwrap.*`.
-- npm and the npm registry: `eslint`, `@eslint/js`, `stylelint`, `stylelint-config-standard`.
+- npm and the npm registry: `eslint`, `@eslint/js`, `globals`, `stylelint`, `stylelint-config-standard`.
 - GitHub Dependabot, which reads the generated `.github/dependabot.yml`.
 - The appkit engine's routes, which have no password reset.
 - Dotfiles history, for the upgrade check samples: `ec98f54c:rubocop/.rubocop.yml` (names `rubocop-yard`) and `df0c7f5d:rubocop/.rubocop.yml` (names `rubocop-rbs_inline`).
@@ -215,7 +218,7 @@ Not checked: this repository has no Gemfile and its template modules define no m
 - `test/finish_template_test.rb` — new summary test.
 - `template/finish.rb` — summary line.
 - `test/email_template_test.rb` — new. Recorder with `generate`, `create_file`, `remove_file`, `gsub_file`, `inject_into_file`, `say`.
-- `template/email.rb` — welcome-only mailer; generated test and preview overwritten.
+- `template/email.rb` — `password_reset` removed; welcome-only mailer; generated test and preview overwritten.
 - `test/i18n_template_test.rb` — new. Recorder that captures the locale heredocs.
 - `template/i18n.rb` — shadowed `edit:` blocks removed.
 - `test/readme_updates_template_test.rb` — new. Recorder whose `destination_root` is a temporary directory holding Rails 8.1.4's default `README.md` text.
@@ -232,7 +235,7 @@ Each fix is a bug fix, so its test comes first and must fail before the fix. Eac
 2. Add the three Dependabot tests to `test/config_template_test.rb`. Watch them fail. Add the `create_file` to `template/config.rb`. Green. Commit.
 3. Write `test/lint_toolchain_template_test.rb`. Watch it fail (the module does not exist). Create `template/lint_toolchain.rb`, add its `apply` line to `template.rb`, update `TEMPLATE_STRUCTURE.md`. Green, and `ruby test/appkit_template_test.rb --exclude test_deleted_template_files_are_gone` and `ruby test/template_syntax_test.rb` stay green. Commit.
 4. Add `test_summary_lists_the_lint_configuration` to `test/finish_template_test.rb`. Watch it fail. Change the line in `template/finish.rb`. Green. Commit.
-5. Write `test/email_template_test.rb`. Watch it fail. Change `template/email.rb`. Green. Commit.
+5. Write `test/email_template_test.rb`. Watch it fail. Change `template/email.rb`: remove `password_reset`, overwrite the test and the preview. Green. Commit.
 6. Write `test/i18n_template_test.rb`. Watch it fail on `admin.users.edit` in all three locales. Delete the shadowed blocks in `template/i18n.rb`. Green. Commit.
 7. Write `test/readme_updates_template_test.rb`. Watch it fail. Fix `template/readme_updates.rb`. Green. Commit. Then the same for `test/deployment_template_test.rb` and `template/deployment.rb`, in its own commit.
 8. Add the `rubocop-rbs_inline` sentence to the `## 31e6664` chapter of `UPGRADING.md`. Commit.
@@ -252,12 +255,10 @@ Each fix is a bug fix, so its test comes first and must fail before the fix. Eac
 
 ## Risks
 
-- `npm install --save-dev` picks the newest majors at generation time. A later major of ESLint, `@eslint/js`, Stylelint or `stylelint-config-standard` can flag generated JS or CSS, and the initial commit then fails. Step 10 catches it today; later it surfaces as a failing generation, the same class of failure as a new shared RuboCop cop.
+- `npm install --save-dev` picks the newest majors at generation time. A later major of ESLint, `@eslint/js`, `globals`, Stylelint or `stylelint-config-standard` can flag generated JS or CSS, and the initial commit then fails. Step 10 catches it today; later it surfaces as a failing generation, the same class of failure as a new shared RuboCop cop.
 - The global `rubocop` and `erb_lint` hooks run over every staged file with the global binaries. They passed in review round 1 with the same dotfiles config, but the dotfiles config changed since (`ec72c1e5`, npm instead of yarn). Step 10 rechecks them.
 - Thor asks "Overwrite …?" when a module writes a file that already exists without `force: true`. `< /dev/null` answers yes, so step 10 cannot show such prompts. Record any "conflict" lines in `generation.log` in the evidence; fixing them is out of scope.
 - `no-hardwrap` always exits 0, so a hard wrap never fails the commit. The step 10 markdownlint check is what proves the Markdown criterion.
-- The hand-declared `window` global covers only today's generated JS. App code that uses `document` or other browser globals fails `no-undef` until the app owner declares them, or until the `globals` package is approved.
-- The `password_reset` mail stays unrenderable and untested in a fresh app until Etienne decides its fate. This is pre-existing; the plan makes it visible, not worse.
 - Rejected: copying the dotfiles `lefthook.yml` and fixing it. The intent says the app holds no copy.
 - Rejected: `@import "x.css"` string notation. Propshaft would not digest it, and `stylelint-config-standard` 40 wants `url()` anyway.
 - Rejected: merging the two locale `edit:` blocks. It would change today's runtime translations.
@@ -295,9 +296,9 @@ Each fix is a bug fix, so its test comes first and must fail before the fix. Eac
 Per changed file, the unit tests expected:
 
 - `test/config_template_test.rb`: `test_config_writes_no_lefthook_file`, `test_config_runs_no_lefthook_install`, `test_dependabot_covers_bundler_npm_and_github_actions_weekly_with_a_seven_day_cooldown` (YAML-parsed content equals the expected hash), `test_dependabot_indents_sequences_and_starts_with_a_document_marker` (content starts with `"---\n"` and holds `"\n  - package-ecosystem: bundler\n"`), `test_dependabot_overwrites_the_rails_generated_file` (`force: true`).
-- `test/lint_toolchain_template_test.rb`: `test_package_json_is_a_private_module_named_after_the_app`, `test_npm_install_adds_exactly_the_four_approved_dev_dependencies`, `test_npm_install_aborts_generation_on_failure`, `test_eslint_config_uses_the_recommended_rules`, `test_eslint_config_declares_window_as_a_readonly_global`, `test_eslint_config_ignores_vendor_public_and_tmp`, `test_stylelint_config_extends_standard_and_ignores_vendor_public_and_tmp`, `test_gitignore_ignores_node_modules`, `test_lint_toolchain_runs_after_config_and_before_finish`.
+- `test/lint_toolchain_template_test.rb`: `test_package_json_is_a_private_module_named_after_the_app`, `test_npm_install_adds_exactly_the_five_approved_dev_dependencies`, `test_npm_install_aborts_generation_on_failure`, `test_eslint_config_uses_the_recommended_rules`, `test_eslint_config_declares_the_browser_globals`, `test_eslint_config_ignores_vendor_public_and_tmp`, `test_stylelint_config_extends_standard_and_ignores_vendor_public_and_tmp`, `test_gitignore_ignores_node_modules`, `test_lint_toolchain_runs_after_config_and_before_finish`.
 - `test/finish_template_test.rb`: `test_summary_lists_the_lint_configuration` (holds "✅ ESLint and Stylelint configuration", not "✅ Lefthook git hooks").
-- `test/email_template_test.rb`: `test_mailer_test_calls_welcome_with_the_user_fixture`, `test_mailer_test_overwrites_the_generated_file` (`force: true`), `test_mailer_preview_calls_each_action_with_its_arguments`, `test_mailer_preview_overwrites_the_generated_file`.
+- `test/email_template_test.rb`: `test_mailer_generator_makes_only_the_welcome_action`, `test_user_mailer_has_no_password_reset`, `test_no_password_reset_views_are_written`, `test_mailer_test_calls_welcome_with_the_user_fixture`, `test_mailer_test_overwrites_the_generated_file` (`force: true`), `test_mailer_preview_calls_welcome_with_a_user`, `test_mailer_preview_overwrites_the_generated_file`.
 - `test/i18n_template_test.rb`: `test_locale_files_have_no_duplicate_keys` (walks `Psych.parse` mapping nodes of `en.yml`, `nl.yml`, `it.yml`), `test_admin_user_edit_keeps_its_title_and_submit`.
 - `test/readme_updates_template_test.rb`: `test_readme_intro_is_one_line`, `test_readme_sqlite_bullets_are_one_line_each`.
 - `test/deployment_template_test.rb`: `test_deployment_ssl_paragraph_is_one_line`.
@@ -317,3 +318,8 @@ Domain skills applied: dependencies (approved npm packages only, npm not yarn, u
 - The step 9 test command claims to stop at the first failure but passes no `--fail-fast` → fixed (wording now says it stops at the first failing file; Minitest 6.0.6 rejects `--fail-fast` as an invalid option, checked locally)
 - The `rails new | tee` pipeline lacks `set -o pipefail`, so a failed generation can look successful → fixed (step 10 sets `pipefail` and requires the pipeline to exit 0)
 - The exact Rails 8.1.4 README string breaks silently when a later Rails changes the wrap → fixed (the intro is matched with a regular expression over any whitespace; the step 10 markdownlint check still proves the generated README)
+
+### Etienne's decisions (2026-10-30)
+
+- Add the `globals` npm package and use `globals.browser` → applied (Signatures, Design decisions, Proof).
+- Remove `password_reset` from the generated app → applied (Signatures, Design decisions, Order of work step 5, Proof).

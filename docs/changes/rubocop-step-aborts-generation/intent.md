@@ -31,12 +31,12 @@ A new app gets its RuboCop rules from the `rubocop-eirvandelden` gem and its git
 - A generated app uses Minitest and Capybara system tests, so its `.rubocop.yml` names the layers `config/default.yml`, `config/rails.yml` and `config/capybara.yml`. The gem does not depend on `rubocop-capybara`, so the app keeps that gem.
 - The initial commit runs through the global hooks and never skips them (no `--no-verify`, no `LEFTHOOK=0`).
 - The global `eslint` and `stylelint` hooks stay as they are. The fresh app carries what they need: a `package.json` with the dev dependencies, an `eslint.config.js` and a Stylelint config (decided 2026-10-30).
-- The configs use the recommended rule sets: `@eslint/js` recommended for ESLint and `stylelint-config-standard` for Stylelint. Generated JS and CSS that they flag is fixed in the template, never silenced by a rule change or a disable comment. Third-party code the app does not own, such as `vendor/`, is not linted.
+- The configs use the recommended rule sets: `@eslint/js` recommended for ESLint and `stylelint-config-standard` for Stylelint. `eslint.config.js` declares the browser globals with `globals.browser`, like the other personal apps (decided 2026-10-30). Generated JS and CSS that they flag is fixed in the template, never silenced by a rule change or a disable comment. Third-party code the app does not own, such as `vendor/`, is not linted.
 - Generation installs the npm packages with `npm install`, so it needs Node and npm on the machine. The template does not install them.
 - If the initial commit still fails a hook after these changes, the coordinator stops and asks Etienne.
 - `rubocop-eirvandelden` requires Ruby 3.4 or later. The template generates on Ruby 4 only and declares no Ruby minimum (decided 2026-10-16).
 - A manual generation check needs network access for bundling.
-- Approved permissions (rule 11): in the generated `Gemfile`, add `rubocop-eirvandelden` and remove `rubocop-minitest`, `rubocop-obsession`, `rubocop-packaging` and `rubocop-rspec`. The `lefthook` gem stays. In the generated `package.json`, add the npm dev dependencies `eslint`, `@eslint/js`, `stylelint` and `stylelint-config-standard` (approved 2026-10-30). Any other dependency change stops to ask.
+- Approved permissions (rule 11): in the generated `Gemfile`, add `rubocop-eirvandelden` and remove `rubocop-minitest`, `rubocop-obsession`, `rubocop-packaging` and `rubocop-rspec`. The `lefthook` gem stays. In the generated `package.json`, add the npm dev dependencies `eslint`, `@eslint/js`, `globals`, `stylelint` and `stylelint-config-standard` (approved 2026-10-30). Any other dependency change stops to ask.
 
 ## In scope
 
@@ -44,9 +44,10 @@ A new app gets its RuboCop rules from the `rubocop-eirvandelden` gem and its git
 - The generated `Gemfile` adds `rubocop-eirvandelden` and drops the plugin gems it already brings: `rubocop-minitest`, `rubocop-obsession`, `rubocop-packaging` and `rubocop-rspec`. `rubocop-capybara` stays.
 - Generated source that the stricter rules flag, and autocorrect cannot fix, is fixed in the template until a fresh app has no offenses.
 - New apps get no `lefthook.yml`, and the template runs no `lefthook install`.
-- New apps get a `package.json` with the four npm dev dependencies, an `eslint.config.js`, a Stylelint config, and `node_modules` in `.gitignore`. Generation runs `npm install` before the initial commit.
+- New apps get a `package.json` with the five npm dev dependencies, an `eslint.config.js`, a Stylelint config, and `node_modules` in `.gitignore`. Generation runs `npm install` before the initial commit.
 - Generated files that fail the global hooks on the initial commit are fixed in the template: `.github/dependabot.yml`, `README.md`, `DEPLOYMENT.md` and any other file the hooks reject.
 - The generated mailer tests call the mailer the way it is defined, so a fresh app's test suite is green.
+- New apps get no `password_reset` mail: no method, views, preview or generator argument. It links to an `edit_password_reset_url` route that neither the template nor appkit defines, so it can never render (decided 2026-10-30).
 - A new `UPGRADING.md` chapter takes an existing app from the copied `.rubocop.yml` to the gem. It covers copies that name `rubocop-yard` or `rubocop-rbs_inline`.
 
 ## Out of scope
