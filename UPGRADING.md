@@ -63,7 +63,7 @@ Expected output: `Appkit::SessionExpiryJob`.
 
 ## 31e6664 — Take RuboCop rules from rubocop-eirvandelden
 
-Applies to apps whose `.rubocop.yml` was copied from the template, which is every app generated before this change. Copies made after 2026-07-14 name `rubocop-yard` without the gem and fail with `cannot load such file -- rubocop-yard`.
+Applies to apps whose `.rubocop.yml` was copied from the template, which is every app generated before this change. Copies made after 2026-07-14 name `rubocop-yard` without the gem and fail with `cannot load such file -- rubocop-yard`. Copies made after 2026-10-13 also name `rubocop-rbs_inline` without the gem and fail with `cannot load such file -- rubocop-rbs_inline`.
 
 In the `Gemfile`, delete these lines:
 
