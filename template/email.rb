@@ -13,7 +13,7 @@ gsub_file "app/mailers/application_mailer.rb", /class ApplicationMailer.*end\nen
 end
 
 # Generate UserMailer
-generate :mailer, "User", "welcome", "password_reset"
+generate :mailer, "User", "welcome"
 
 # Completely rewrite UserMailer to avoid leftover code
 remove_file "app/mailers/user_mailer.rb"
@@ -22,12 +22,6 @@ create_file "app/mailers/user_mailer.rb", <<~RUBY
     def welcome(user)
       @user = user
       mail(to: @user.email, subject: "Welcome to \#{Rails.application.class.module_parent_name}!")
-    end
-
-    def password_reset(user, token)
-      @user = user
-      @token = token
-      mail(to: @user.email, subject: "Password Reset Instructions")
     end
   end
 RUBY
@@ -57,35 +51,31 @@ create_file "app/views/user_mailer/welcome.text.erb", <<~TEXT
   Get started: <%= root_url %>
 TEXT
 
-create_file "app/views/user_mailer/password_reset.html.erb", <<~ERB
-  <h1>Password Reset</h1>
+# Overwrite the generated mailer test and preview, which call actions with no arguments
+create_file "test/mailers/user_mailer_test.rb", <<~RUBY, force: true
+  require "test_helper"
 
-  <p>Hi <%= @user.email %>,</p>
+  class UserMailerTest < ActionMailer::TestCase
+    test "welcome" do
+      user = users(:user)
+      mail = UserMailer.welcome(user)
 
-  <p>You requested a password reset. Click the link below to reset your password:</p>
+      assert_equal "Welcome to \#{Rails.application.class.module_parent_name}!", mail.subject
+      assert_equal [ user.email ], mail.to
+      assert_match user.email, mail.body.encoded
+    end
+  end
+RUBY
 
-  <p>
-    <%= link_to "Reset Password", edit_password_reset_url(@token) %>
-  </p>
-
-  <p>This link will expire in 2 hours.</p>
-
-  <p>If you didn't request this, please ignore this email.</p>
-ERB
-
-create_file "app/views/user_mailer/password_reset.text.erb", <<~TEXT
-  Password Reset
-
-  Hi <%= @user.email %>,
-
-  You requested a password reset. Visit this link to reset your password:
-
-  <%= edit_password_reset_url(@token) %>
-
-  This link will expire in 2 hours.
-
-  If you didn't request this, please ignore this email.
-TEXT
+create_file "test/mailers/previews/user_mailer_preview.rb", <<~RUBY, force: true
+  # Preview all emails at http://localhost:3000/rails/mailers/user_mailer
+  class UserMailerPreview < ActionMailer::Preview
+    # Preview this email at http://localhost:3000/rails/mailers/user_mailer/welcome
+    def welcome
+      UserMailer.welcome(User.first)
+    end
+  end
+RUBY
 
 # Update mailer layouts with proper styling
 gsub_file "app/views/layouts/mailer.html.erb", /.*/m, <<~ERB
