@@ -123,8 +123,7 @@ create_file "DEPLOYMENT.md", <<~MD
 
   ## SSL/HTTPS
 
-  Kamal can automatically provision SSL certificates using Let's Encrypt.
-  Configure this in `config/deploy.yml` under the `traefik` section.
+  Kamal can automatically provision SSL certificates using Let's Encrypt. Configure this in `config/deploy.yml` under the `traefik` section.
 
   Example:
   \`\`\`yaml
