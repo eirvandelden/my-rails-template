@@ -88,12 +88,6 @@ create_file "config/locales/en.yml", <<~YAML
           active_sessions: "🔗 Active Sessions"
           edit: "✏️ Edit"
           back: "← Back"
-        edit:
-          title: "✏️ Edit User"
-          email: "📧 Email"
-          role: "🎭 Role"
-          submit: "💾 Update User"
-          cancel: "Cancel"
         create:
           success: "User created successfully"
         edit:
@@ -182,12 +176,6 @@ create_file "config/locales/nl.yml", <<~YAML
           active_sessions: "🔗 Actieve sessies"
           edit: "✏️ Bewerken"
           back: "← Terug"
-        edit:
-          title: "✏️ Gebruiker bewerken"
-          email: "📧 E-mail"
-          role: "🎭 Rol"
-          submit: "💾 Gebruiker bijwerken"
-          cancel: "Annuleren"
         create:
           success: "Gebruiker succesvol aangemaakt"
         edit:
@@ -276,12 +264,6 @@ create_file "config/locales/it.yml", <<~YAML
           active_sessions: "🔗 Sessioni attive"
           edit: "✏️ Modifica"
           back: "← Indietro"
-        edit:
-          title: "✏️ Modifica utente"
-          email: "📧 Email"
-          role: "🎭 Ruolo"
-          submit: "💾 Aggiorna utente"
-          cancel: "Annulla"
         create:
           success: "Utente creato con successo"
         edit:
