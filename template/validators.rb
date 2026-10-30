@@ -19,6 +19,7 @@ create_file "app/validators/email_validator.rb", <<~RUBY
     # @param attribute [Symbol] the attribute name being validated
     # @param value [String] the value to validate
     # @return [void]
+    #: (ActiveRecord::Base, Symbol, String?) -> void
     def validate_each(record, attribute, value)
       return if value.blank?
 
@@ -43,6 +44,7 @@ create_file "app/validators/url_validator.rb", <<~RUBY
     # @param attribute [Symbol] the attribute name being validated
     # @param value [String] the value to validate
     # @return [void]
+    #: (ActiveRecord::Base, Symbol, String?) -> void
     def validate_each(record, attribute, value)
       return if value.blank?
 
@@ -107,6 +109,7 @@ create_file "app/validators/README.md", <<~MD
 
   ```ruby
   class MyValidator < ActiveModel::EachValidator
+    #: (ActiveRecord::Base, Symbol, String?) -> void
     def validate_each(record, attribute, value)
       return if value.blank?
 

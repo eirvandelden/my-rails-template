@@ -54,6 +54,7 @@ create_file "app/models/user.rb", <<~RUBY
     after_initialize :set_defaults
 
     # Return timezone as ActiveSupport::TimeZone object
+    #: () -> ActiveSupport::TimeZone?
     def time_zone
       ActiveSupport::TimeZone[timezone]
     end

@@ -19,6 +19,7 @@ generate :mailer, "User", "welcome"
 remove_file "app/mailers/user_mailer.rb"
 create_file "app/mailers/user_mailer.rb", <<~RUBY
   class UserMailer < ApplicationMailer
+    #: (User) -> Mail::Message
     def welcome(user)
       @user = user
       mail(to: @user.email, subject: "Welcome to \#{Rails.application.class.module_parent_name}!")
@@ -133,6 +134,7 @@ create_file "app/jobs/send_welcome_email_job.rb", <<~RUBY
   class SendWelcomeEmailJob < ApplicationJob
     queue_as :default
 
+    #: (User) -> void
     def perform(user)
       UserMailer.welcome(user).deliver_now
     end

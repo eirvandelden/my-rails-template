@@ -15,6 +15,7 @@ RUBY
 # Create admin dashboard controller
 create_file "app/controllers/admin/dashboard_controller.rb", <<~RUBY
   class Admin::DashboardController < Admin::BaseController
+    #: () -> void
     def index
       @users = User.all.order(last_login_at: :desc).limit(10)
       @total_users = User.count
@@ -29,17 +30,21 @@ create_file "app/controllers/admin/users_controller.rb", <<~RUBY
   class Admin::UsersController < Admin::BaseController
     before_action :set_user, only: [:show, :edit, :update, :destroy]
 
+    #: () -> void
     def index
       @users = User.all.order(created_at: :desc)
     end
 
+    #: () -> void
     def show
     end
 
+    #: () -> void
     def new
       @user = User.new
     end
 
+    #: () -> void
     def create
       @user = User.new(user_params)
 
@@ -50,9 +55,11 @@ create_file "app/controllers/admin/users_controller.rb", <<~RUBY
       end
     end
 
+    #: () -> void
     def edit
     end
 
+    #: () -> void
     def update
       if @user.update(user_params)
         redirect_to admin_user_path(@user), notice: t(".success")
@@ -61,6 +68,7 @@ create_file "app/controllers/admin/users_controller.rb", <<~RUBY
       end
     end
 
+    #: () -> void
     def destroy
       if @user == Current.user
         redirect_to admin_users_path, alert: t(".cannot_delete_self")
