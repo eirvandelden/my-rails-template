@@ -53,7 +53,7 @@ say "✅ Classless CSS + SMACSS structure", :white
 say "✅ Selenized OKLCH color themes", :white
 say "✅ I18n support (en, nl, it)", :white
 say "✅ RuboCop configuration", :white
-say "✅ Lefthook git hooks", :white
+say "✅ ESLint and Stylelint configuration", :white
 say "✅ Kamal deployment ready", :white
 say "✅ agents.md for AI assistance", :white
 say "✅ Enhanced test helpers", :white

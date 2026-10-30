@@ -33,12 +33,17 @@ after_bundle do
   apply "#{TEMPLATE_ROOT}/template/pagination.rb"
   apply "#{TEMPLATE_ROOT}/template/routes.rb"
   apply "#{TEMPLATE_ROOT}/template/home.rb"
+end
+
+# Second block: Rails runs after_bundle callbacks in order; each stays under RuboCop's block length limit
+after_bundle do
   apply "#{TEMPLATE_ROOT}/template/i18n.rb"
   apply "#{TEMPLATE_ROOT}/template/testing.rb"
   apply "#{TEMPLATE_ROOT}/template/email.rb"
   apply "#{TEMPLATE_ROOT}/template/css.rb"
   apply "#{TEMPLATE_ROOT}/template/appkit.rb"
   apply "#{TEMPLATE_ROOT}/template/config.rb"
+  apply "#{TEMPLATE_ROOT}/template/lint_toolchain.rb"
   apply "#{TEMPLATE_ROOT}/template/deployment.rb"
   apply "#{TEMPLATE_ROOT}/template/seeds.rb"
   apply "#{TEMPLATE_ROOT}/template/readme_updates.rb"

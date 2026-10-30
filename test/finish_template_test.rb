@@ -34,6 +34,11 @@ class FinishTemplateTest < Minitest::Test
     assert_equal "   http://localhost:3000/admin (admin only)", summary[index + 1]
   end
 
+  def test_summary_lists_the_lint_configuration
+    assert_includes summary, "✅ ESLint and Stylelint configuration"
+    refute_includes summary, "✅ Lefthook git hooks"
+  end
+
   private
 
   def summary
