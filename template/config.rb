@@ -14,18 +14,33 @@ create_file ".rubocop.yml", <<~YAML, force: true
 YAML
 say "  ✓ Created .rubocop.yml", :green
 
-# Copy lefthook configuration from template
-lefthook_source = File.join(TEMPLATE_ROOT, "lefthook.yml")
-if File.exist?(lefthook_source)
-  # Read the actual file content (follows symlink)
-  create_file "lefthook.yml", File.read(lefthook_source)
-  say "  ✓ Created lefthook.yml", :green
-else
-  say "  ✗ Warning: lefthook.yml not found in template", :yellow
-end
+# Dependabot config; force replaces the file rails new generates, whose unindented sequences fail yamllint
+create_file ".github/dependabot.yml", <<~YAML, force: true
+  ---
+  version: 2
+  updates:
+    - package-ecosystem: bundler
+      directory: "/"
+      schedule:
+        interval: weekly
+      cooldown:
+        default-days: 7
 
-# Install lefthook
-run "bundle exec lefthook install"
+    - package-ecosystem: npm
+      directory: "/"
+      schedule:
+        interval: weekly
+      cooldown:
+        default-days: 7
+
+    - package-ecosystem: github-actions
+      directory: "/"
+      schedule:
+        interval: weekly
+      cooldown:
+        default-days: 7
+YAML
+say "  ✓ Created .github/dependabot.yml", :green
 
 # Create .env.template for environment variables
 create_file ".env.template", <<~ENV
