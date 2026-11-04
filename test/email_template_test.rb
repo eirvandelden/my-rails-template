@@ -63,6 +63,12 @@ class EmailTemplateTest < Minitest::Test
     refute_includes content, "password_reset"
   end
 
+  def test_mailer_preview_signature_returns_a_message_delivery
+    content = file("test/mailers/previews/user_mailer_preview.rb")[:content]
+
+    assert_includes content, "#: () -> ActionMailer::MessageDelivery\n  def welcome"
+  end
+
   def test_mailer_preview_overwrites_the_generated_file
     assert_equal true, file("test/mailers/previews/user_mailer_preview.rb")[:options][:force]
   end
