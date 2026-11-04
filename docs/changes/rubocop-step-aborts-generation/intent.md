@@ -2,7 +2,7 @@
 
 Author: Etienne van Delden de la Haije. Status: accepted. Type: bugfix. Delivery: autonomous. Codex review: no.
 
-Amended 2026-10-17: the scope now also covers the git hooks of a fresh app and its failing mailer tests. Amended 2026-10-30: the fresh app gets its own ESLint and Stylelint setup, so the global `eslint` and `stylelint` hooks pass. The first version was accepted on 2026-10-13.
+Amended 2026-10-17: the scope now also covers the git hooks of a fresh app and its failing mailer tests. Amended 2026-10-30: the fresh app gets its own ESLint and Stylelint setup, so the global `eslint` and `stylelint` hooks pass. Amended 2026-11-04: this machine no longer sets a global `core.hooksPath` (dotfiles `8363835d`, 2026-11-03, kept on purpose), so the hooks check supplies it through `GIT_CONFIG_*` environment variables. The first version was accepted on 2026-10-13.
 
 ## Problem
 
@@ -30,6 +30,7 @@ A new app gets its RuboCop rules from the `rubocop-eirvandelden` gem and its git
 - The gem comes from GitHub, as `new-repo-setup` prescribes: `gem "rubocop-eirvandelden", github: "eirvandelden/rubocop-eirvandelden", require: false` in the development group.
 - A generated app uses Minitest and Capybara system tests, so its `.rubocop.yml` names the layers `config/default.yml`, `config/rails.yml` and `config/capybara.yml`. The gem does not depend on `rubocop-capybara`, so the app keeps that gem.
 - The initial commit runs through the global hooks and never skips them (no `--no-verify`, no `LEFTHOOK=0`).
+- This machine has no global `core.hooksPath` since 2026-11-03, and Etienne keeps it that way. The hooks check sets it for one generation run only, with `GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=~/.config/git/hooks`, and changes no git config file. Bringing `new-repo-setup` in line with this is out of scope.
 - The global `eslint` and `stylelint` hooks stay as they are. The fresh app carries what they need: a `package.json` with the dev dependencies, an `eslint.config.js` and a Stylelint config (decided 2026-10-30).
 - The configs use the recommended rule sets: `@eslint/js` recommended for ESLint and `stylelint-config-standard` for Stylelint. `eslint.config.js` declares the browser globals with `globals.browser`, like the other personal apps (decided 2026-10-30). Generated JS and CSS that they flag is fixed in the template, never silenced by a rule change or a disable comment. Third-party code the app does not own, such as `vendor/`, is not linted.
 - Generation installs the npm packages with `npm install`, so it needs Node and npm on the machine. The template does not install them.
@@ -52,7 +53,8 @@ A new app gets its RuboCop rules from the `rubocop-eirvandelden` gem and its git
 
 ## Out of scope
 
-- Changes to the global hooks in the dotfiles `lefthook.yml`.
+- Changes to the global hooks in the dotfiles `lefthook.yml`, and to the dotfiles git config.
+- The `new-repo-setup` skill text about global hooks.
 - Installing Node or npm.
 - The `lefthook` gem in the generated `Gemfile`.
 - Removing lefthook files from apps generated earlier.
@@ -64,7 +66,8 @@ A new app gets its RuboCop rules from the `rubocop-eirvandelden` gem and its git
 
 ## Acceptance criteria
 
-- On this machine, with its global `core.hooksPath`, generating a new app makes the initial commit through the global hooks and prints "🎊 Happy coding!".
+- On this machine, with `core.hooksPath` set to `~/.config/git/hooks` through `GIT_CONFIG_*` environment variables, generating a new app makes the initial commit through the global hooks, with every hook job passing, and prints "🎊 Happy coding!".
+- On this machine, with its git config as it is (no hooks path), generating a new app prints "🎊 Happy coding!".
 - A fresh app has no `lefthook.yml`.
 - In a fresh app, `npx --no eslint .` and `npx --no stylelint "**/*.css"` report no problems.
 - A fresh app's `bundle exec rubocop` reports no offenses.
