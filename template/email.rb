@@ -72,6 +72,7 @@ create_file "test/mailers/previews/user_mailer_preview.rb", <<~RUBY, force: true
   # Preview all emails at http://localhost:3000/rails/mailers/user_mailer
   class UserMailerPreview < ActionMailer::Preview
     # Preview this email at http://localhost:3000/rails/mailers/user_mailer/welcome
+    #: () -> Mail::Message
     def welcome
       UserMailer.welcome(User.first)
     end
