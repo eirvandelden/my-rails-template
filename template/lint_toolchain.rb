@@ -20,7 +20,10 @@ create_file "eslint.config.js", <<~JS
   ]
 JS
 
-stylelint_config = { "extends" => [ "stylelint-config-standard" ], "ignoreFiles" => [ "vendor/**", "public/**", "tmp/**" ] }
+stylelint_config = {
+  "extends" => [ "stylelint-config-standard" ],
+  "ignoreFiles" => [ "vendor/**", "public/**", "tmp/**" ]
+}
 create_file ".stylelintrc.json", JSON.pretty_generate(stylelint_config) + "\n"
 
 append_to_file ".gitignore", "\n# npm\n/node_modules\n"

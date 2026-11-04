@@ -41,7 +41,9 @@ class ReadmeUpdatesTemplateTest < Minitest::Test
 
   def test_readme_sqlite_bullets_are_one_line_each
     section = readme[/### SQLite\n.*?(?=\n### )/m]
-    wrapped = section.lines.each_cons(2).select { |line, following| line.start_with?("- ") && following.start_with?("  ") }
+    wrapped = section.lines.each_cons(2).select do |line, following|
+      line.start_with?("- ") && following.start_with?("  ")
+    end
 
     assert_empty wrapped
   end

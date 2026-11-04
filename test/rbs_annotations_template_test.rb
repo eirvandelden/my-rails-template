@@ -57,7 +57,8 @@ class RbsAnnotationsTemplateTest < Minitest::Test
   end
 
   def app_ruby_files
-    MODULES.map { |name| recorded_files("template/#{name}.rb") }.reduce({}, :merge).select { |path, _| path.match?(%r{\A(app|test/mailers/previews)/.*\.rb\z}) }
+    files = MODULES.map { |name| recorded_files("template/#{name}.rb") }.reduce({}, :merge)
+    files.select { |path, _| path.match?(%r{\A(app|test/mailers/previews)/.*\.rb\z}) }
   end
 
   def recorded_files(path)
