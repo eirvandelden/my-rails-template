@@ -15,10 +15,6 @@ class DeploymentRecorder
     @files[path] = content
   end
 
-  def method_missing(*) = nil
-
-  def respond_to_missing?(*) = true
-
   def apply(path)
     instance_eval(File.read(path, encoding: "UTF-8"), path)
   end

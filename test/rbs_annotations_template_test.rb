@@ -13,9 +13,25 @@ class AnnotationRecorder
     @files[path] = content
   end
 
-  def method_missing(*) = nil
+  def append_to_file(*); end
 
-  def respond_to_missing?(*) = true
+  def empty_directory(*); end
+
+  def generate(*); end
+
+  def gsub_file(*); end
+
+  def inject_into_class(*); end
+
+  def inject_into_file(*); end
+
+  def rails_command(*); end
+
+  def remove_file(*); end
+
+  def run(*); end
+
+  def say(*); end
 
   def apply(path)
     instance_eval(File.read(path, encoding: "UTF-8"), path)
