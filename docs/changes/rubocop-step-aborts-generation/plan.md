@@ -323,3 +323,9 @@ Domain skills applied: dependencies (approved npm packages only, npm not yarn, u
 
 - Add the `globals` npm package and use `globals.browser` → applied (Signatures, Design decisions, Proof).
 - Remove `password_reset` from the generated app → applied (Signatures, Design decisions, Order of work step 5, Proof).
+
+## Deviations during implementation (2026-10-30)
+
+- Step 10 found 14 `Style/RbsInline/MissingTypeAnnotation` offenses in the generated app that `rubocop -A` cannot fix, so generation still exited 1 at `rubocop -A`. `intent.md` covers this ("fixed in the template until a fresh app has no offenses"). Fix: `#:` signatures on the public methods in `template/admin.rb`, `models.rb`, `appkit.rb`, `email.rb`, `validators.rb`, and an annotated `HomeController` in `template/home.rb`. Test: `test/rbs_annotations_template_test.rb`.
+- `template.rb` is split into two `after_bundle` blocks, because the `lint_toolchain` line pushed the block past `Metrics/BlockLength`. Apply order is unchanged.
+- `TEMPLATE_STRUCTURE.md`: the appkit paragraph is joined to one line, because the `no-hardwrap` hook blocks any commit that touches the file.
