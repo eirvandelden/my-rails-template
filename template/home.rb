@@ -3,6 +3,15 @@
 # Generate Home controller
 generate :controller, "Home", "index", "--skip-routes"
 
+# Overwrite the generated controller with a type-annotated action
+create_file "app/controllers/home_controller.rb", <<~RUBY, force: true
+  class HomeController < ApplicationController
+    #: () -> void
+    def index
+    end
+  end
+RUBY
+
 # Completely rewrite home view
 remove_file "app/views/home/index.html.erb"
 create_file "app/views/home/index.html.erb", <<~ERB

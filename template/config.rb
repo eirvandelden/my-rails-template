@@ -4,28 +4,43 @@
 say "🔗 Creating agents.md symlink...", :blue
 run "ln -sf ~/Developer/dotfiles/AGENTS.md agents.md"
 
-# Copy RuboCop configuration from template
-rubocop_source = File.join(TEMPLATE_ROOT, ".rubocop.yml")
-if File.exist?(rubocop_source)
-  # Read the actual file content (follows symlink)
-  create_file ".rubocop.yml", File.read(rubocop_source)
-  say "  ✓ Created .rubocop.yml", :green
-else
-  say "  ✗ Warning: .rubocop.yml not found in template", :yellow
-end
+# RuboCop rules come from the rubocop-eirvandelden gem; force replaces the file rails new generates
+create_file ".rubocop.yml", <<~YAML, force: true
+  inherit_gem:
+    rubocop-eirvandelden:
+      - config/default.yml
+      - config/rails.yml
+      - config/capybara.yml
+YAML
+say "  ✓ Created .rubocop.yml", :green
 
-# Copy lefthook configuration from template
-lefthook_source = File.join(TEMPLATE_ROOT, "lefthook.yml")
-if File.exist?(lefthook_source)
-  # Read the actual file content (follows symlink)
-  create_file "lefthook.yml", File.read(lefthook_source)
-  say "  ✓ Created lefthook.yml", :green
-else
-  say "  ✗ Warning: lefthook.yml not found in template", :yellow
-end
+# Dependabot config; force replaces the file rails new generates, whose unindented sequences fail yamllint
+create_file ".github/dependabot.yml", <<~YAML, force: true
+  ---
+  version: 2
+  updates:
+    - package-ecosystem: bundler
+      directory: "/"
+      schedule:
+        interval: weekly
+      cooldown:
+        default-days: 7
 
-# Install lefthook
-run "bundle exec lefthook install"
+    - package-ecosystem: npm
+      directory: "/"
+      schedule:
+        interval: weekly
+      cooldown:
+        default-days: 7
+
+    - package-ecosystem: github-actions
+      directory: "/"
+      schedule:
+        interval: weekly
+      cooldown:
+        default-days: 7
+YAML
+say "  ✓ Created .github/dependabot.yml", :green
 
 # Create .env.template for environment variables
 create_file ".env.template", <<~ENV

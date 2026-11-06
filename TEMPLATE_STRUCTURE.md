@@ -23,7 +23,8 @@ my-rails-template/
 │   ├── email.rb                  # Email system
 │   ├── css.rb                    # CSS setup
 │   ├── appkit.rb                 # appkit engine: auth, PWA/push, theme/preferences
-│   ├── config.rb                 # Config files (RuboCop, Lefthook, etc.)
+│   ├── config.rb                 # Config files (RuboCop, Dependabot, etc.)
+│   ├── lint_toolchain.rb         # ESLint and Stylelint setup
 │   ├── deployment.rb             # Kamal setup
 │   ├── seeds.rb                  # Database seeds
 │   └── finish.rb                 # Final steps & success message
@@ -131,15 +132,13 @@ end
 | `email.rb`          | Complete email system               | ~200  |
 | `css.rb`            | MVP.css + SMACSS structure          | ~150  |
 | `appkit.rb`         | Wires the appkit engine: session auth, PWA/push, theme/preferences | ~150 |
-| `config.rb`         | RuboCop, Lefthook, .env, Procfile   | ~100  |
+| `config.rb`         | RuboCop, Dependabot, .env, Procfile | ~100  |
+| `lint_toolchain.rb` | ESLint and Stylelint config, npm install | ~30 |
 | `deployment.rb`     | Kamal deployment setup              | ~180  |
 | `seeds.rb`          | Default user accounts               | ~20   |
 | `finish.rb`         | Migrations, seeds, git, success msg | ~50   |
 
-The actual auth/theme *logic* lives in the [appkit](https://github.com/eirvandelden/appkit) gem, not this
-repo - `appkit.rb` only wires a freshly-generated app onto it (Gemfile entry, routes mount, initializer,
-model includes, JS/CSS glue). Engine fixes reach generated apps via `bundle update appkit`, no template
-change required.
+The actual auth/theme *logic* lives in the [appkit](https://github.com/eirvandelden/appkit) gem, not this repo - `appkit.rb` only wires a freshly-generated app onto it (Gemfile entry, routes mount, initializer, model includes, JS/CSS glue). Engine fixes reach generated apps via `bundle update appkit`, no template change required.
 
 Total: ~1,160 lines spread across focused files instead of one 1,160-line file.
 
